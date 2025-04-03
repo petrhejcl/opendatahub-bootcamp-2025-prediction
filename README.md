@@ -14,7 +14,9 @@ You are free to use whatever programming language best fits your group, but with
 # Dataset
 For this challenge you will use the parking dataset, which is part of the Open Data Hub's mobility domain.  
 You can explore it using the
-[databrowser](https://databrowser.opendatahub.com/dataset-overview/178ea911-cc54-418e-b42e-52cad18f1ec1) or our [analytics frontend](https://analytics.opendatahub.com/) (under "Parking")
+- [analytics frontend](https://analytics.opendatahub.com/) (under "Parking")
+- [API](https://mobility.api.opendatahub.com/v2/tree/ParkingStation/free,occupied/latest)
+- [databrowser](https://databrowser.opendatahub.com/dataset-overview/178ea911-cc54-418e-b42e-52cad18f1ec1) 
 
 The stations are of type `ParkingStation`.
 
@@ -57,6 +59,7 @@ The token has a validity of 1 hour, so it's best to automate it's request in you
 >
 >Request beyond that limit will result in a HTTP 429 Too Many Requests
 See [quota limits](https://github.com/noi-techpark/opendatahub-docs/wiki/Historical-Data-and-Request-Rate-Limits) and [Http Referer](https://github.com/noi-techpark/opendatahub-docs/wiki/Http-Referer)
+
 ## Time Series Objects and Concepts
 Time series data takes the form of `Measurements` attached to `Stations`  
 
