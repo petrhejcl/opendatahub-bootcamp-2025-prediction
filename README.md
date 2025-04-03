@@ -42,7 +42,8 @@ For you, this boils down to making a REST call supplying your credentials (which
 
 You then have to pass this token as `Authorization: Bearer <token>` HTTP header on every call to our Open Data Hub APIs.
 >[!IMPORTANT]
->If you don't pass a token, you are limited to 5 days of time series history per call, or 100 days if you pass a `Referer` http header. Request beyond that limit will result in a HTTP 429 Too Many Requests
+>If you don't pass a token, you are limited to 5 days of time series history per call, or 100 days if you pass a `Referer` http header.  
+>Request beyond that limit will result in a HTTP 429 Too Many Requests
 See [quota limits](https://github.com/noi-techpark/opendatahub-docs/wiki/Historical-Data-and-Request-Rate-Limits) and [Http Referer](https://github.com/noi-techpark/opendatahub-docs/wiki/Http-Referer)
 ## Time Series Objects and Concepts
 Time series data takes the form of `Measurements` attached to `Stations`  
