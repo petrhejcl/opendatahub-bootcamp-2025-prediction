@@ -11,11 +11,27 @@ Your challenge will be to implement an prediction of parking station occupancy u
 # Tech stack
 You are free to use whatever programming language best fits your group, but with it being a data analysis / stats heavy topic, python is probably a good choice
 
-# Open Data Hub Time Series architecture
+# Dataset
+For this challenge you will use the parking dataset, which is part of the Open Data Hub's mobility domain.  
+You can explore it using the
+[databrowser](https://databrowser.opendatahub.com/dataset-overview/178ea911-cc54-418e-b42e-52cad18f1ec1) or our [analytics frontend](https://analytics.opendatahub.com/) (under "Parking")
+
+The stations are of type `ParkingStation`.
+
+Not all parking stations have their time series data publicly accessible, and not all have the same data types and fields.
+
+To guarantee data consistency, you should limit your dataset to one or more `origins` by using the `where` filter. Stations from the same origin all have uniform metadata fields and data types.
+
+Generally, our parking stations provide at a minimum the following fields:
+- `smetadata.capacity` The maximum capacity
+- datatype `occupied` the number of occupied spots 
+- datatype `free` the number of free spots
+
+# APIs
 There are two APIs you will interact with:
-- **Keycloak** [auth.opendatahub.com/auth/](https://auth.opendatahub.com/auth/) to obtain an authorization token, needed for access to large time series datasets (not mandatory)
 - **Open Data Hub Time series API** [mobility.api.opendatahub.com](mobility.api.opendatahub.com)
  to retrieve the time series data both for training your algorithm and making the prediction
+- **Keycloak** [auth.opendatahub.com/auth/](https://auth.opendatahub.com/auth/) to obtain an authorization token, needed for access to large time series datasets (not mandatory)
 
 Note that for this challenge you will interact with the `Time Series / Mobility` APIs, and not it's sibling, the `Content / Tourism` domain
 
@@ -29,7 +45,8 @@ If you don't pass a token, you are limited to 5 days of time series history per 
 ## Time Series Objects and Concepts
 Time series data takes the form of `Measurements` attached to `Stations`  
 
-__A measurement is a data point with a timestamp.__
+>[!NOTE]
+>__A measurement is a data point with a timestamp.__
 
 Each measurement has exactly one
 - `mvalidtime`, the timestamp of the measurement
@@ -122,18 +139,3 @@ You can find more information on the API format here:
 [Swagger Ninja API](https://mobility.api.opendatahub.com)  
 [Open Data Hub documentation](https://opendatahub.readthedocs.io/en/latest/mobility-tech.html)  
 [Time series API README](https://github.com/noi-techpark/opendatahub-timeseries-api/blob/main/README.md)  
-
-## Dataset
-For this challenge you will use the parking dataset, which is part of the Open Data Hub's mobility domain.
-[Link to the dataset](https://databrowser.opendatahub.com/dataset-overview/178ea911-cc54-418e-b42e-52cad18f1ec1)
-
-The stations are of type `ParkingStation`.
-
-Not all parking stations have their time series data publicly accessible, and not all have the same data types and fields.
-
-To guarantee data consistency, you should limit your dataset to one or more `origins` by using the `where` filter. Stations from the same origin all have uniform metadata fields and data types.
-
-Generally, our parking stations provide at a minimum the following fields:
-- `smetadata.capacity` The maximum capacity
-- datatype `occupied` the number of occupied spots 
-- datatype `free` the number of free spots
