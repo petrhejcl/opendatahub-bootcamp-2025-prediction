@@ -38,11 +38,23 @@ Note that for this challenge you will interact with the `Time Series / Mobility`
 ## Keycloak
 Keycloak is an Open Source Identity and Access management server (keycloak.org).
 We use it to authenticate and authorize our services via the OAuth2 standard.
-For you, this boils down to making a REST call supplying your credentials (which we will provide to you), and you get back an authorization token.
+For you, this boils down to making a REST call supplying your credentials (which we will provide to you), and you get back an access token.
+
+```sh
+curl -X POST -L "https://auth.opendatahub.com/auth/realms/noi/protocol/openid-connect/token" \
+    --header 'Content-Type: application/x-www-form-urlencoded' \
+    --data-urlencode 'grant_type=client_credentials' \
+    --data-urlencode 'client_id=opendatahub-bootcamp-2025' \
+    --data-urlencode 'client_secret=****************'
+```
 
 You then have to pass this token as `Authorization: Bearer <token>` HTTP header on every call to our Open Data Hub APIs.
+
+The token has a validity of 1 hour, so it's best to automate it's request in your application.
+
 >[!IMPORTANT]
->If you don't pass a token, you are limited to 5 days of time series history per call, or 100 days if you pass a `Referer` http header.  
+>If you don't pass a token, you are limited to 5 days of time series history per call, or 100 days when passing a `Referer` http header.  
+>
 >Request beyond that limit will result in a HTTP 429 Too Many Requests
 See [quota limits](https://github.com/noi-techpark/opendatahub-docs/wiki/Historical-Data-and-Request-Rate-Limits) and [Http Referer](https://github.com/noi-techpark/opendatahub-docs/wiki/Http-Referer)
 ## Time Series Objects and Concepts
