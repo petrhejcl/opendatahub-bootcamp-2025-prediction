@@ -41,21 +41,22 @@ We use it to authenticate and authorize our services via the OAuth2 standard.
 For you, this boils down to making a REST call supplying your credentials (which we will provide to you), and you get back an authorization token.
 
 You then have to pass this token as `Authorization: Bearer <token>` HTTP header on every call to our Open Data Hub APIs.
-If you don't pass a token, you are limited to 5 days of time series history per call, or 100 days if you pass a `Referer` http header. See [quota limits](https://github.com/noi-techpark/opendatahub-docs/wiki/Historical-Data-and-Request-Rate-Limits) and [Http Referer](https://github.com/noi-techpark/opendatahub-docs/wiki/Http-Referer)
+>[!IMPORTANT]
+>If you don't pass a token, you are limited to 5 days of time series history per call, or 100 days if you pass a `Referer` http header. Request beyond that limit will result in a HTTP 429 Too Many Requests
+See [quota limits](https://github.com/noi-techpark/opendatahub-docs/wiki/Historical-Data-and-Request-Rate-Limits) and [Http Referer](https://github.com/noi-techpark/opendatahub-docs/wiki/Http-Referer)
 ## Time Series Objects and Concepts
 Time series data takes the form of `Measurements` attached to `Stations`  
 
 >[!NOTE]
->__A measurement is a data point with a timestamp.__
+>A measurement is a data point with a timestamp.
 
 Each measurement has exactly one
 - `mvalidtime`, the timestamp of the measurement
 - `mvalue` the value of the measurement
-- `mperiod`, the timeframe (in seconds) that the measurement references, and the periodicity with which it is updated. e.g. a temperature sensor that sends us it's data every 60 seconds has a period of 60 seconds.  
-- `station`, a geographical point with a name, ID and some additional information. It's the location where measurements are made.
-Think a physical e-charging station somewhere on a parking lot, a thermometer somewhere in a field, or a parking area in a city.  
+- `mperiod`, the timeframe (in seconds) that the measurement references, and the periodicity with which it is updated. e.g. a temperature sensor that sends us it's data every 60 seconds has a period of 60.  
+- `station`, a geographical point with an ID, name and some additional information. It's the location where measurements are made.
 Fields referring to the station are prefixed with `s*`
-- `data type`, which identifies what type of measurement it actually is. Is it a temperature in degrees Celsius? Is it the number of available cars? Is it the current occupancy of a parking lot? Is it an average, or a discrete value?  
+- `data type`, which identifies what type of measurement it actually is. Is it a temperature in degrees Celsius? Is it the number of available cars? Is it the current occupancy of a parking lot?  
 Fields referring to the data type are prefixed with `t*`
 
 A **Station** might have multiple time series (list of measurements) of 0-n **Data types**, for example a weather station could have both `temperature` and `humidity` measurements.  
@@ -129,10 +130,10 @@ stationtype
     '─ datatype
       '─ [measurements]
 ```
-
 `flat` flattens this tree structure, resulting in a list of measurements, where each measurement has it's station and datatype information repeated 
 
-Generally, `tree` is useful for initial exploration, while `flat` is better once you have tuned in your `where` and `select` parameters to give you exactly the data you want.
+>[!TIP]
+>Generally, `tree` is useful for initial exploration, while `flat` is better once you have tuned in your `where` and `select` parameters to give you exactly the data you want.
 
 ### More information
 You can find more information on the API format here:  
