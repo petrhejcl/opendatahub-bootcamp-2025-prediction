@@ -149,7 +149,7 @@ stationtype
 `flat` flattens this tree structure, resulting in a list of measurements, where each measurement has it's station and datatype information repeated 
 
 >[!TIP]
->Generally, `tree` is useful for initial exploration, while `flat` is better once you have tuned in your `where` and `select` parameters to give you exactly the data you want.
+>Generally, `tree` is useful for initial exploration, while `flat` is better once you have tuned your `where` and `select` parameters to give you exactly the data you want.
 
 ### More information
 You can find more information on the API format here:  
