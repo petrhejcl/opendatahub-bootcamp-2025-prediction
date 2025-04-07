@@ -22,12 +22,14 @@ The stations are of type `ParkingStation`.
 
 Not all parking stations have their time series data publicly accessible, and not all have the same data types and fields.
 
-To guarantee data consistency, you should limit your dataset to one or more `origins` by using the `where` filter. Stations from the same origin all have uniform metadata fields and data types.
+To guarantee data consistency, you should limit your dataset to one or more `origins`, or even stations (`scode`) by using the `where` filter. Stations from the same origin all have uniform metadata fields and data types.
 
 Generally, our parking stations provide at a minimum the following fields:
 - `smetadata.capacity` The maximum capacity
 - datatype `occupied` the number of occupied spots 
 - datatype `free` the number of free spots
+
+We suggest you use analytics to find a station that is up to date and has a clean history.
 
 # APIs
 There are two APIs you will interact with:
