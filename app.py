@@ -29,11 +29,16 @@ if st.button("Fetch Data", use_container_width=True, type="primary"):
 
     st.dataframe(df)
 
-tab2, tab3, tab4 = st.tabs(["Occupancy Prediction", "Plots", "Model Training"])
+predict_tab, train_tab, plots_tab = st.tabs(
+    ["Occupancy Prediction", "Model Training", "Plots"]
+)
 
-with tab2:
+with predict_tab:
     occupancy_prediction_page()
-with tab3:
-    plots_page()
-with tab4:
+with train_tab:
     model_training_page(station, start_date, end_date)
+with plots_tab:
+    try:
+        plots_page()
+    except ValueError:
+        st.warning("Make sure to have some data and a trained model ready")

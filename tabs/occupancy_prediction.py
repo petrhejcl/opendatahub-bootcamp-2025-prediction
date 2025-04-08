@@ -29,5 +29,6 @@ def occupancy_prediction_page():
         with st.spinner("Wait for it...", show_time=True):
             free_spaces = predict(prediction_datetime, True)
 
-        st.subheader(f"Expected number of free parking spaces {free_spaces}", divider=True)
+        if free_spaces is not None:
+            st.subheader(f"Expected number of free parking spaces {free_spaces}", divider=True)
 
