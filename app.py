@@ -18,7 +18,7 @@ end_date = str(st.date_input("End Date", value=date.today()))
 if start_date > end_date:
     st.error("Start date must be before or equal to end date.")
 
-tab1, tab2, tab3, tab4 = st.tabs(["Historical Data", "Occupancy Prediction", "Plots", "Model Training", ])
+tab1, tab2, tab3, tab4 = st.tabs(["Historical Data", "Occupancy Prediction", "Plots", "Model Training"])
 
 with tab1:
     historical_data_page(station,start_date,end_date)
