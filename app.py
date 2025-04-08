@@ -23,7 +23,7 @@ tab1, tab2, tab3, tab4 = st.tabs(["Historical Data", "Occupancy Prediction", "Pl
 with tab1:
     historical_data_page(station,start_date,end_date)
 with tab2:
-    occupancy_prediction_page(station,start_date,end_date)
+    occupancy_prediction_page()
 with tab3:
     plots_page(station,start_date,end_date)
 with tab4:
