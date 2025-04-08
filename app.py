@@ -1,7 +1,7 @@
 import streamlit as st
 
 from datetime import date
-from get_data import get_stations
+from get_data import get_stations, get_data
 from tabs.historical_data import historical_data_page
 from tabs.model_training import model_training_page
 from tabs.occupancy_prediction import occupancy_prediction_page
@@ -22,12 +22,16 @@ end_date = str(st.date_input("End Date", value=date.today()))
 if start_date > end_date:
     st.error("Start date must be before or equal to end date.")
 
-tab1, tab2, tab3, tab4 = st.tabs(
-    ["Historical Data", "Occupancy Prediction", "Plots", "Model Training"]
-)
+if st.button("Fetch Data", use_container_width=True, type="primary"):
+    df = get_data(
+        station_code=station["scode"], start_date=start_date, end_date=end_date
+    )
+    st.success("Data retrieved successfully!")
 
-with tab1:
-    historical_data_page(station, start_date, end_date)
+    st.dataframe(df)
+
+tab2, tab3, tab4 = st.tabs(["Occupancy Prediction", "Plots", "Model Training"])
+
 with tab2:
     occupancy_prediction_page()
 with tab3:
