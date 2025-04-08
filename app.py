@@ -9,10 +9,10 @@ from tabs.plots import plots_page
 st.set_page_config(layout="wide")
 
 # Streamlit UI
-st.title("Station Data Fetcher")
+st.title("Free Parking Spots Prediction")
 
 station = st.selectbox(
-    label="Select Station Code",
+    label="Select the parking",
     options=get_stations(),
     format_func=lambda e: f"{e['sname']}",
 )
