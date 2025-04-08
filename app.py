@@ -2,7 +2,6 @@ import streamlit as st
 
 from datetime import date
 from get_data import get_stations, get_data
-from tabs.historical_data import historical_data_page
 from tabs.model_training import model_training_page
 from tabs.occupancy_prediction import occupancy_prediction_page
 from tabs.plots import plots_page
