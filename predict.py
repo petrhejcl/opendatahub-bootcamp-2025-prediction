@@ -5,7 +5,7 @@ from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
 import pickle as pkl
-
+import streamlit as st
 
 # Load the data
 def load_data(file_path):
@@ -319,10 +319,10 @@ def predict(prediction_time_str=None, use_stored_model=True,):
         pkl.dump(model, open("rf.pkl", "wb"))
         pkl.dump(feature_cols, open("rf_feature_cols.pkl", "wb"))
 
-    # Plot predicted vs actual
-    print("\nGenerating predicted vs actual comparison plots...")
-    plot_predicted_vs_actual(df_features, model, feature_cols)
-    print("Created visualization: predicted_vs_actual.png and correlation_plot.png")
+    # # Plot predicted vs actual
+    # print("\nGenerating predicted vs actual comparison plots...")
+    # plot_predicted_vs_actual(df_features, model, feature_cols)
+    # print("Created visualization: predicted_vs_actual.png and correlation_plot.png")
 
     # Make prediction for specified time or default to one hour in the future
     if prediction_time_str:
@@ -332,7 +332,11 @@ def predict(prediction_time_str=None, use_stored_model=True,):
         prediction_time = None
         print("\nNo time specified. Making prediction for one hour from latest data point.")
 
-    prediction_time, predicted_spaces = predict_future(df_features, model, feature_cols, prediction_time)
+    try:
+        prediction_time, predicted_spaces = predict_future(df_features, model, feature_cols, prediction_time)
+    except ValueError:
+        st.warning("Make sure to have some data and a trained model")
+        return
 
     print(f"Prediction for {prediction_time}:")
     print(f"Estimated free parking spaces: {predicted_spaces}")
