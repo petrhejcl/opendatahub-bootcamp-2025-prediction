@@ -2,6 +2,7 @@ import streamlit as st
 from datetime import date
 
 from get_data import get_data
+from get_data import get_stations
 
 
 st.set_page_config(layout="wide")
@@ -26,3 +27,5 @@ else:
         st.success("Data retrieved successfully!")
 
         st.dataframe(df)
+
+st.write(get_stations())
