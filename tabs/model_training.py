@@ -1,5 +1,4 @@
 import streamlit as st
-from datetime import date
 from task2 import load_data, create_features, train_model
 import pickle as pkl
 
