@@ -14,6 +14,7 @@ def model_training_page(station,start_date,end_date):
     #     st.error("Start date must be before or equal to end date.")
     # else:
     #     # Button to trigger the function
+    get_data(station_code=station["scode"], start_date=start_date, end_date=end_date)
     df = load_data("parking.csv")
     df_features = create_features(df)
 
