@@ -3,6 +3,5 @@
 __pycache__
 *.png
 *.html
-*.csv
 *.json
 *.pkl
