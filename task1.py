@@ -25,20 +25,15 @@ try:
     print(response.status_code)
     data = response.json().get("data") # Parse JSON response
 
-    for measurement in data:
-        print("meas", measurement)
-
     with open('parking.csv', 'w', newline='') as csvfile:
-        spamwriter = csv.writer(csvfile, delimiter=' ',
+        parking_writer = csv.writer(csvfile, delimiter=',',
                                 quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        spamwriter.writerow(['Spam'] * 5 + ['Baked Beans'])
-        spamwriter.writerow(['Spam', 'Lovely Spam', 'Wonderful Spam'])
+        parking_writer.writerow(['tname','mvalidtime','mvalue','scode','sname','sorigin'])
 
-    # Save to a JSON file
-    with open(output_file, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2)
+        for measurement in data:
+            parking_writer.writerow([measurement.get("tname"),measurement.get("mvalidtime"),measurement.get("mvalue"),measurement.get("scode"),measurement.get("sname"),measurement.get("sorigin")])
 
-    print(f"Response saved to {output_file}")
+        print(f"Response saved to {csvfile}")
 
 except requests.RequestException as e:
     print(f"Request failed: {e}")
