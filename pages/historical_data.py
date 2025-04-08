@@ -4,13 +4,7 @@ from datetime import date
 from get_data import get_data
 from get_data import get_stations
 
-def historical_data_page(station):
-    # User inputs
-
-    # Ensure start date is before end date
-    if start_date > end_date:
-        st.error("Start date must be before or equal to end date.")
-    else:
+def historical_data_page(station,start_date,end_date):
         # Button to trigger the function
         if st.button("Fetch Data", use_container_width=True, type="primary"):
             df = get_data(

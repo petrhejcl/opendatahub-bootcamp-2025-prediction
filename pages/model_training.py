@@ -5,7 +5,7 @@ import pickle as pkl
 
 from get_data import get_data
 
-def model_training_page(station):
+def model_training_page(station,start_date,end_date):
     # start_date2 = str(st.date_input("Start Date", value=date.today(),key="noh"))
     # end_date2 = str(st.date_input("End Date", value=date.today(),key="boh"))
     #
@@ -14,7 +14,7 @@ def model_training_page(station):
     #     st.error("Start date must be before or equal to end date.")
     # else:
     #     # Button to trigger the function
-    df = load_data("parking.cs")
+    df = load_data("parking.csv")
     df_features = create_features(df)
 
     if st.button("Train model", use_container_width=True, type="primary"):
