@@ -31,6 +31,6 @@ with tab1:
 with tab2:
     occupancy_prediction_page()
 with tab3:
-    plots_page(station, start_date, end_date)
+    plots_page()
 with tab4:
     model_training_page(station, start_date, end_date)
