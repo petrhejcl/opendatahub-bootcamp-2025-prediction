@@ -10,7 +10,7 @@ end_date = "2025-04-08" # not included
 station_name = "P16 - Fiera via Marco Polo/Buozzi"
 station_code = 116
 
-url = f"https://mobility.api.opendatahub.com/v2/flat/ParkingStation/free/{start_date}/{end_date}?where=and%28sorigin.eq.FAMAS%2Cscode.eq.%22{station_code}%22%29&select=mvalue,mvalidtime,sname,scode,sorigin,tname&limit=-1"
+url = f"https://mobility.api.opendatahub.com/v2/flat/ParkingStation/free,occupied/{start_date}/{end_date}?where=and%28sorigin.eq.FAMAS%2Cscode.eq.%22{station_code}%22%29&select=mvalue,mvalidtime,sname,scode,sorigin,tname&limit=-1"
 
 # TODO: Maybe add this to separate file
 token_url = "https://auth.opendatahub.com/auth/realms/noi/protocol/openid-connect/token"
