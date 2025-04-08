@@ -31,6 +31,8 @@ Generally, our parking stations provide at a minimum the following fields:
 
 We suggest you use analytics to find a station that is up to date and has a clean history.
 
+To access history of more than 100 days at a time, you must register a user on analytics, see below ('Keycloak') for more information
+
 # APIs
 There are two APIs you will interact with:
 - **Open Data Hub Time series API** [mobility.api.opendatahub.com](mobility.api.opendatahub.com)
@@ -42,19 +44,21 @@ Note that for this challenge you will interact with the `Time Series / Mobility`
 ## Keycloak
 Keycloak is an Open Source Identity and Access management server (keycloak.org).
 We use it to authenticate and authorize our services via the OAuth2 standard.
-For you, this boils down to making a REST call supplying your credentials (which we will provide to you), and you get back an access token.
+For you, this boils down to making a REST call supplying the credentials below, and you get back an access token.
 
 ```sh
 curl -X POST -L "https://auth.opendatahub.com/auth/realms/noi/protocol/openid-connect/token" \
     --header 'Content-Type: application/x-www-form-urlencoded' \
     --data-urlencode 'grant_type=client_credentials' \
     --data-urlencode 'client_id=opendatahub-bootcamp-2025' \
-    --data-urlencode 'client_secret=****************'
+    --data-urlencode 'client_secret=QiMsLjDpLi5ffjKRkI7eRgwOwNXoU9l1'
 ```
 
 You then have to pass this token as `Authorization: Bearer <token>` HTTP header on every call to our Open Data Hub APIs.
 
 The token has a validity of 1 hour, so it's best to automate it's request in your application.
+
+These credentials will only be valid during the Bootcamp event
 
 >[!IMPORTANT]
 >If you don't pass a token, you are limited to 5 days of time series history per call, or 100 days when passing a `Referer` http header.  
