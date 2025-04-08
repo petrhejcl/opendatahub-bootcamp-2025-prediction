@@ -43,15 +43,30 @@ try:
     print(response.headers)
     response.raise_for_status()  # Raise an error for bad status codes\
     print(response.status_code)
-    data = response.json().get("data") # Parse JSON response
+    data = response.json().get("data")  # Parse JSON response
 
-    with open('parking.csv', 'w', newline='') as csvfile:
-        parking_writer = csv.writer(csvfile, delimiter=',',
-                                quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        parking_writer.writerow(['tname','mvalidtime','mvalue','scode','sname','sorigin'])
+    with open("parking.csv", "w", newline="") as csvfile:
+        parking_writer = csv.writer(
+            csvfile, delimiter=",", quotechar="|", quoting=csv.QUOTE_MINIMAL
+        )
+        parking_writer.writerow(["mvalidtime", "free", "occupied"])
+
+        data_dict = dict()
 
         for measurement in data:
-            parking_writer.writerow([measurement.get("tname"),measurement.get("mvalidtime"),measurement.get("mvalue"),measurement.get("scode"),measurement.get("sname"),measurement.get("sorigin")])
+            if measurement["mvalidtime"] in data_dict:
+                data_dict[measurement["mvalidtime"]].update(
+                    {measurement["tname"]: measurement["mvalue"]}
+                )
+            else:
+                data_dict[measurement["mvalidtime"]] = {
+                    measurement["tname"]: measurement["mvalue"]
+                }
+
+        for mvalidtime, data in data_dict.items():
+            parking_writer.writerow(
+                [mvalidtime, data.get("free"), data.get("occupied")]
+            )
 
         print(f"Response saved to {csvfile}")
 
