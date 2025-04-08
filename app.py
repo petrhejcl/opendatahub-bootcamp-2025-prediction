@@ -11,7 +11,7 @@ st.set_page_config(layout="wide")
 st.title("Station Data Fetcher")
 
 # User inputs
-station_code = st.text_input("Enter Station Code")
+station = st.selectbox(label="Select Station Code", options=get_stations(), format_func=lambda e: f"{e['sname']}")
 start_date = str(st.date_input("Start Date", value=date.today()))
 end_date = str(st.date_input("End Date", value=date.today()))
 
@@ -22,10 +22,8 @@ else:
     # Button to trigger the function
     if st.button("Fetch Data", use_container_width=True, type="primary"):
         df = get_data(
-            station_code=station_code, start_date=start_date, end_date=end_date
+            station_code=station["scode"], start_date=start_date, end_date=end_date
         )
         st.success("Data retrieved successfully!")
 
         st.dataframe(df)
-
-st.write(get_stations())
