@@ -23,7 +23,7 @@ station = st.selectbox(
 start_date = str(st.date_input("Start Date", value=date.today()))
 end_date = str(st.date_input("End Date", value=date.today()))
 
-on=st.toggle(label="prova",value=False)
+on = st.toggle(label="toggle map", value=False)
 if on:
     # Sample stations
     def get_stations():
@@ -40,56 +40,92 @@ if on:
     if "selected_station_id" not in st.session_state:
         st.session_state.selected_station_id = stations[0]["id"]
 
-    # Get last selected station
+    # Get current selected station
     selected_station = next((s for s in stations if s["id"] == st.session_state.selected_station_id), stations[0])
 
-    # --- 1. Folium map first ---
-    m = folium.Map(location=[selected_station["lat"], selected_station["lon"]], zoom_start=15)
+    col1, col2 = st.columns([2, 1])
 
-    # Add markers
-    for s in stations:
-        color = "blue" if s["id"] == st.session_state.selected_station_id else "green"
-        folium.Marker(
-            location=[s["lat"], s["lon"]],
-            popup=s["sname"],
-            tooltip=s["sname"],
-            icon=folium.Icon(color=color)
-        ).add_to(m)
+    with col1:
+        # Create Folium map centered on selected station
+        m = folium.Map(location=[selected_station["lat"], selected_station["lon"]], zoom_start=15)
 
-    # Display map and capture interaction
-    map_data = st_folium(m, width=700, height=500)
+        # Add only single, large circle markers for each station
+        for s in stations:
+            # Set color based on selection
+            color = "blue" if s["id"] == st.session_state.selected_station_id else "green"
 
-    # --- 2. Handle map click before rendering selectbox ---
-    if map_data and map_data.get("last_object_clicked"):
-        clicked_coords = map_data["last_object_clicked"]
-        clicked_lat = clicked_coords["lat"]
-        clicked_lon = clicked_coords["lng"]
+            # Create a single large circle marker with good clickability
+            # Removed popup parameter to avoid fixed dialog
+            folium.CircleMarker(
+                location=[s["lat"], s["lon"]],
+                radius=20,  # Large radius for better clicking
+                color=color,
+                fill=True,
+                fill_opacity=0.7,
+                weight=4,  # Thick border for visibility
+                tooltip=s["sname"]  # Only tooltip (hover text) remains
+            ).add_to(m)
 
-        # Match by coordinates (within small tolerance)
-        tolerance = 0.0001
-        clicked_station = next(
-            (s for s in stations if
-             abs(s["lat"] - clicked_lat) < tolerance and abs(s["lon"] - clicked_lon) < tolerance),
-            None
+        # Display map
+        map_data = st_folium(
+            m,
+            width=600,
+            height=400,
+            key="station_map",
+            returned_objects=["last_clicked"]
         )
 
-        # If clicked station is different, update state and rerun
-        if clicked_station and clicked_station["id"] != st.session_state.selected_station_id:
-            st.session_state.selected_station_id = clicked_station["id"]
+        # Process map clicks with generous tolerance
+        if map_data and map_data.get("last_clicked"):
+            clicked_coords = map_data["last_clicked"]
+            clicked_lat = clicked_coords["lat"]
+            clicked_lon = clicked_coords["lng"]
+
+            # Find nearest station
+            min_distance = float('inf')
+            clicked_station = None
+
+            for s in stations:
+                # Calculate distance
+                distance = ((s["lat"] - clicked_lat) ** 2 + (s["lon"] - clicked_lon) ** 2) ** 0.5
+                if distance < min_distance:
+                    min_distance = distance
+                    clicked_station = s
+
+            # Use a generous click tolerance
+            if min_distance < 0.03 and clicked_station and clicked_station[
+                "id"] != st.session_state.selected_station_id:
+                # Update selection and auto-center map
+                st.session_state.selected_station_id = clicked_station["id"]
+                # Rerun to update the map
+                st.rerun()
+
+    with col2:
+        # Station selection dropdown
+        station_index = next(i for i, s in enumerate(stations) if s["id"] == st.session_state.selected_station_id)
+
+        station = st.selectbox(
+            "Select the parking",
+            options=stations,
+            index=station_index,
+            format_func=lambda e: e["sname"],
+            key="station_selector"
+        )
+
+        # Update selection from dropdown without auto-centering
+        if station["id"] != st.session_state.selected_station_id:
+            st.session_state.selected_station_id = station["id"]
+            selected_station = station
+
+        # Display station info
+        st.markdown(f"### {selected_station['sname']}")
+        st.write(f"ID: {selected_station['id']}")
+        st.write(f"Latitude: {selected_station['lat']:.6f}")
+        st.write(f"Longitude: {selected_station['lon']:.6f}")
+
+        # Show on Map button
+        if st.button("Show on Map"):
             st.rerun()
-
-    # --- 3. Render selectbox, bound to session state ---
-    station = st.selectbox(
-        "Select the parking",
-        options=stations,
-        index=next(i for i, s in enumerate(stations) if s["id"] == st.session_state.selected_station_id),
-        format_func=lambda e: e["sname"]
-    )
-
-    # Update state if selectbox changes
-    if station["id"] != st.session_state.selected_station_id:
-        st.session_state.selected_station_id = station["id"]
-        st.rerun()
 
 else:
     if start_date > end_date:
