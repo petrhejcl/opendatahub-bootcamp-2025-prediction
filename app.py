@@ -26,15 +26,25 @@ end_date = str(st.date_input("End Date", value=date.today()))
 on = st.toggle(label="toggle map", value=False)
 if on:
     # Sample stations
-    def get_stations():
-        return [
-            {"id": 1, "sname": "Central Park", "lat": 40.785091, "lon": -73.968285},
-            {"id": 2, "sname": "Times Square", "lat": 40.758896, "lon": -73.985130},
-            {"id": 3, "sname": "Empire State", "lat": 40.748817, "lon": -73.985428},
-        ]
+    # def get_stations():
+    #     return [
+    #         {"id": 1, "sname": "Central Park", "lat": 40.785091, "lon": -73.968285},
+    #         {"id": 2, "sname": "Times Square", "lat": 40.758896, "lon": -73.985130},
+    #         {"id": 3, "sname": "Empire State", "lat": 40.748817, "lon": -73.985428},
+    #     ]
+
+    def get_coordinates():
+        data = get_stations()
+        stations = []
+        if isinstance(data, list):
+            key = 'pcoordinate'
+            for d in data:
+                if key in d:
+                    stations.append({"id": int(d['scode']), "sname": d['sname'], "lat": d[key]['y'], "lon": d[key]['x']})
+        return stations
 
 
-    stations = get_stations()
+    stations = get_coordinates()
 
     # Init session state
     if "selected_station_id" not in st.session_state:
