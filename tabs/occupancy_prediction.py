@@ -10,14 +10,16 @@ def get_current_time():
 
     # Round minutes to nearest 5-minute interval
     rounded_minute = 5 * round(now.minute / 5)
-    rounded_time = now.replace(minute=rounded_minute, second=0, microsecond=0)
 
-    # If rounding pushed us to the next hour
+    # Handle the case when rounded_minute becomes 60
     if rounded_minute == 60:
-        rounded_time = rounded_time + datetime.timedelta(hours=1)
-        rounded_time = rounded_time.replace(minute=0)
+        # Add an hour and set minutes to 0 instead of using replace with minute=60
+        rounded_time = (now + datetime.timedelta(hours=1)).replace(minute=0, second=0, microsecond=0)
+    else:
+        rounded_time = now.replace(minute=rounded_minute, second=0, microsecond=0)
 
     return rounded_time
+
 
 def occupancy_prediction_page():
     start_date = st.date_input('Enter date of arrival', value=datetime.date.today())
@@ -31,4 +33,3 @@ def occupancy_prediction_page():
 
         if free_spaces is not None:
             st.subheader(f"Expected number of free parking spaces {free_spaces}", divider=True)
-

@@ -13,14 +13,6 @@ from tabs.occupancy_prediction import get_current_time
 
 
 def simplified_version_page():
-    # Sample stations
-    # def get_stations():
-    #     return [
-    #         {"id": 1, "sname": "Central Park", "lat": 40.785091, "lon": -73.968285},
-    #         {"id": 2, "sname": "Times Square", "lat": 40.758896, "lon": -73.985130},
-    #         {"id": 3, "sname": "Empire State", "lat": 40.748817, "lon": -73.985428},
-    #     ]
-
     def get_coordinates():
         data = get_stations()
         stations = []
@@ -29,17 +21,24 @@ def simplified_version_page():
             for d in data:
                 if key in d:
                     stations.append(
-                        {"id": int(d['scode']), "sname": d['sname'], "lat": d[key]['y'], "lon": d[key]['x']})
+                        {"scode": int(d['scode']), "sname": d['sname'], "lat": d[key]['y'], "lon": d[key]['x']})
         return stations
 
     stations = get_coordinates()
 
+    def custom_formats(station):
+        key = 'pcoordinate'
+        if key in station:
+            return f"{station['sname']} (available on the map)"
+        else:
+            return station['sname']
+
     # Init session state
     if "selected_station_id" not in st.session_state:
-        st.session_state.selected_station_id = stations[0]["id"]
+        st.session_state.selected_station_id = stations[0]["scode"]
 
     # Get current selected station
-    selected_station = next((s for s in stations if s["id"] == st.session_state.selected_station_id), stations[0])
+    selected_station = next((s for s in stations if s["scode"] == st.session_state.selected_station_id), stations[0])
 
     col1, col2 = st.columns([2, 1])
 
@@ -50,7 +49,7 @@ def simplified_version_page():
         # Add only single, large circle markers for each station
         for s in stations:
             # Set color based on selection
-            color = "blue" if s["id"] == st.session_state.selected_station_id else "green"
+            color = "blue" if s["scode"] == st.session_state.selected_station_id else "green"
 
             # Create a single large circle marker with good clickability
             # Removed popup parameter to avoid fixed dialog
@@ -92,60 +91,76 @@ def simplified_version_page():
 
             # Use a generous click tolerance
             if min_distance < 0.03 and clicked_station and clicked_station[
-                "id"] != st.session_state.selected_station_id:
+                "scode"] != st.session_state.selected_station_id:
                 # Update selection and auto-center map
-                st.session_state.selected_station_id = clicked_station["id"]
+                st.session_state.selected_station_id = clicked_station["scode"]
                 # Rerun to update the map
                 st.rerun()
 
     with col2:
         # Station selection dropdown
-        station_index = next(i for i, s in enumerate(stations) if s["id"] == st.session_state.selected_station_id)
+        all_stations = get_stations()
+        station_index = next(
+            (i for i, s in enumerate(all_stations) if int(s["scode"]) == st.session_state.selected_station_id), 0)
 
-        station = st.selectbox(
+        selected_station_from_dropdown = st.selectbox(
             "Select the parking",
-            options=stations,
+            options=all_stations,
             index=station_index,
-            format_func=lambda e: e["sname"],
+            format_func=custom_formats,
             key="station_selector"
         )
 
-        # Update selection from dropdown without auto-centering
-        if station["id"] != st.session_state.selected_station_id:
-            st.session_state.selected_station_id = station["id"]
-            selected_station = station
+        # Update session state from dropdown selection
+        if selected_station_from_dropdown and "scode" in selected_station_from_dropdown:
+            dropdown_station_id = int(selected_station_from_dropdown["scode"])
+            if dropdown_station_id != st.session_state.selected_station_id:
+                st.session_state.selected_station_id = dropdown_station_id
+                # No rerun here to prevent infinite loop
 
-        # Display station info
-        st.markdown(f"### {selected_station['sname']}")
-        st.write(f"ID: {selected_station['id']}")
-        st.write(f"Latitude: {selected_station['lat']:.6f}")
-        st.write(f"Longitude: {selected_station['lon']:.6f}")
+        # Now get the complete station data for display
+        current_station_data = next(
+            (s for s in all_stations if int(s["scode"]) == st.session_state.selected_station_id), None)
 
-        # Show on Map button
-        if st.button("Show on Map"):
-            st.rerun()
+        if current_station_data:
+            # Display station info
+            st.markdown(f"### {current_station_data['sname']}")
+            st.write(f"ID: {current_station_data['scode']}")
 
-        start_date = st.date_input('Enter date of arrival', value=datetime.date.today())
-        start_time = st.time_input('Enter time of arrival', get_current_time())
+            if 'pcoordinate' in current_station_data:
+                st.write(f"Latitude: {current_station_data['pcoordinate']['y']:.6f}")
+                st.write(f"Longitude: {current_station_data['pcoordinate']['x']:.6f}")
 
-        prediction_datetime = datetime.datetime.combine(start_date, start_time)
+                # Show on Map button only for stations with coordinates
+                if st.button("Show on Map"):
+                    # Find the station with coordinates in our map-enabled stations list
+                    map_station = next((s for s in stations if s["scode"] == st.session_state.selected_station_id),
+                                       None)
+                    if map_station:
+                        st.rerun()
+                    else:
+                        st.warning("This station is not available on the map.")
+            else:
+                st.info("Coordinates not available for this station")
 
-        if st.button("Estimate", use_container_width=True, type="primary", key="occupancy_prediction"):
-            with st.spinner("Wait for it...", show_time=True):
-                # TODO: code behaviour fetch data form the past 6 months for the parking, train the model and display the value
-                today=datetime.date.today()
-                past=today-relativedelta(months=-6)
-                # get_data(selected_station, past ,today)
+        end_date = st.date_input('Enter date of arrival', value=datetime.date.today())
+        end_time = st.time_input('Enter time of arrival', get_current_time())
+        past = datetime.date.today() - relativedelta(months=6)
 
-                df = get_data(station_code=selected_station["id"], start_date=past, end_date=today)
-                if df.empty:
-                    st.subheader("Data from the selected station not available")
-                elif len(df.columns) == 0:
-                    st.subheader("Data from the selected station not available")
-                elif df.isna().any().any():
-                    st.subheader("Data from the selected station not available")
-                else:
-                    st.dataframe(df)
-                    free_spaces = predict(prediction_datetime, False)
-                    if free_spaces is not None:
-                        st.subheader(f"Expected number of free parking spaces {free_spaces}", divider=True)
+        prediction_datetime = datetime.datetime.combine(end_date, end_time)
+        if past > end_date:
+            st.error("Start date must be before or equal to end date.")
+
+        if st.button("Fetch Data", use_container_width=True, type="primary"):
+            if current_station_data:  # Make sure we have a station selected
+                df = get_data(
+                    station_code=st.session_state.selected_station_id,
+                    start_date=past,
+                    end_date=today()
+                )
+
+                free_spaces = predict(prediction_datetime, True)
+                if free_spaces is not None:
+                    st.subheader(f"Expected number of free parking spaces: {free_spaces}", divider=True)
+            else:
+                st.error("Please select a valid station first.")
