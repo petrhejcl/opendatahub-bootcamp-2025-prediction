@@ -1,9 +1,14 @@
-from get_data import get_stations
+from dateutil.utils import today
+from networkx.classes import is_empty
+
+from get_data import get_stations, get_data
 import streamlit as st
 from streamlit_folium import st_folium
 import folium
-from datetime import date
+import datetime
+from dateutil.relativedelta import relativedelta
 
+from predict import predict
 from tabs.occupancy_prediction import get_current_time
 
 
@@ -120,5 +125,27 @@ def simplified_version_page():
         if st.button("Show on Map"):
             st.rerun()
 
-    arrival_date = str(st.date_input("Arrival Date", value=date.today()))
-    arrival_time = st.time_input('Enter time of arrival', get_current_time())
+        start_date = st.date_input('Enter date of arrival', value=datetime.date.today())
+        start_time = st.time_input('Enter time of arrival', get_current_time())
+
+        prediction_datetime = datetime.datetime.combine(start_date, start_time)
+
+        if st.button("Estimate", use_container_width=True, type="primary", key="occupancy_prediction"):
+            with st.spinner("Wait for it...", show_time=True):
+                # TODO: code behaviour fetch data form the past 6 months for the parking, train the model and display the value
+                today=datetime.date.today()
+                past=today-relativedelta(months=-6)
+                # get_data(selected_station, past ,today)
+
+                df = get_data(station_code=selected_station["id"], start_date=past, end_date=today)
+                if df.empty:
+                    st.subheader("Data from the selected station not available")
+                elif len(df.columns) == 0:
+                    st.subheader("Data from the selected station not available")
+                elif df.isna().any().any():
+                    st.subheader("Data from the selected station not available")
+                else:
+                    st.dataframe(df)
+                    free_spaces = predict(prediction_datetime, False)
+                    if free_spaces is not None:
+                        st.subheader(f"Expected number of free parking spaces {free_spaces}", divider=True)

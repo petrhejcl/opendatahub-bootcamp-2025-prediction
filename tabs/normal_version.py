@@ -1,7 +1,5 @@
-from get_data import get_stations
+from get_data import get_stations, get_data
 import streamlit as st
-from streamlit_folium import st_folium
-import folium
 from datetime import date
 
 from tabs.model_training import model_training_page

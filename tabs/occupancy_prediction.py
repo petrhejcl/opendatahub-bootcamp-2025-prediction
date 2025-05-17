@@ -27,7 +27,7 @@ def occupancy_prediction_page():
 
     if st.button("Estimate", use_container_width=True, type="primary", key="occupancy_prediction"):
         with st.spinner("Wait for it...", show_time=True):
-            free_spaces = predict(prediction_datetime, True)
+            free_spaces = predict(prediction_datetime, False)
 
         if free_spaces is not None:
             st.subheader(f"Expected number of free parking spaces {free_spaces}", divider=True)
