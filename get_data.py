@@ -146,7 +146,7 @@ def make_request(url: str):
 
 
 def get_stations():
-    url = "https://mobility.api.opendatahub.com/v2/flat%2Cnode/ParkingStation?limit=-1&offset=0&select=scode%2Csname%2Csmetadata.municipality%2Cpcoordinate&shownull=false&distinct=true"
+    url = "https://mobility.api.opendatahub.com/v2/flat%2Cnode/ParkingStation?limit=-1&offset=0&select=scode%2Csname%2Csmetadata.municipality%2Cscoordinate&shownull=false&distinct=true"
     response = make_request(url)
 
     if response is None:

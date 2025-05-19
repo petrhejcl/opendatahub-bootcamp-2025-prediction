@@ -17,21 +17,21 @@ def simplified_version_page():
         data = get_stations()
         stations = []
         if isinstance(data, list):
-            key = 'pcoordinate'
+            key = 'scoordinate'
             for d in data:
                 if key in d:
                     stations.append(
-                        {"scode": int(d['scode']), "sname": d['sname'], "lat": d[key]['y'], "lon": d[key]['x']})
+                        {"scode": d['scode'], "sname": d['sname'], "lat": d[key]['y'], "lon": d[key]['x']})
         return stations
 
     stations = get_coordinates()
 
     def custom_formats(station):
-        key = 'pcoordinate'
+        key = 'scoordinate'
         if key in station:
-            return f"{station['sname']} (available on the map)"
-        else:
             return station['sname']
+        else:
+            return f"{station['sname']} ( not available on the map)"
 
     # Init session state
     if "selected_station_id" not in st.session_state:
@@ -101,7 +101,7 @@ def simplified_version_page():
         # Station selection dropdown
         all_stations = get_stations()
         station_index = next(
-            (i for i, s in enumerate(all_stations) if int(s["scode"]) == st.session_state.selected_station_id), 0)
+            (i for i, s in enumerate(all_stations) if s["scode"] == st.session_state.selected_station_id), 0)
 
         selected_station_from_dropdown = st.selectbox(
             "Select the parking",
@@ -127,9 +127,9 @@ def simplified_version_page():
             st.markdown(f"### {current_station_data['sname']}")
             st.write(f"ID: {current_station_data['scode']}")
 
-            if 'pcoordinate' in current_station_data:
-                st.write(f"Latitude: {current_station_data['pcoordinate']['y']:.6f}")
-                st.write(f"Longitude: {current_station_data['pcoordinate']['x']:.6f}")
+            if 'scoordinate' in current_station_data:
+                st.write(f"Latitude: {current_station_data['scoordinate']['y']:.6f}")
+                st.write(f"Longitude: {current_station_data['scoordinate']['x']:.6f}")
 
                 # Show on Map button only for stations with coordinates
                 if st.button("Show on Map"):
