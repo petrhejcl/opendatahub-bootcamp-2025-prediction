@@ -150,17 +150,17 @@ def simplified_version_page():
         prediction_datetime = datetime.datetime.combine(end_date, end_time)
         if past > end_date:
             st.error("Start date must be before or equal to end date.")
+        with st.spinner(text="Fetching data..."):
+            if st.button("Fetch Data", use_container_width=True, type="primary"):
+                if current_station_data:  # Make sure we have a station selected
+                    df = get_data(
+                        station_code=st.session_state.selected_station_id,
+                        start_date=past,
+                        end_date=today()
+                    )
 
-        if st.button("Fetch Data", use_container_width=True, type="primary"):
-            if current_station_data:  # Make sure we have a station selected
-                df = get_data(
-                    station_code=st.session_state.selected_station_id,
-                    start_date=past,
-                    end_date=today()
-                )
-
-                free_spaces = predict(prediction_datetime, True)
-                if free_spaces is not None:
-                    st.subheader(f"Expected number of free parking spaces: {free_spaces}", divider=True)
-            else:
-                st.error("Please select a valid station first.")
+                    free_spaces = predict(prediction_datetime, False)
+                    if free_spaces is not None:
+                        st.subheader(f"Expected number of free parking spaces: {free_spaces}", divider=True)
+                else:
+                    st.error("Please select a valid station first.")
