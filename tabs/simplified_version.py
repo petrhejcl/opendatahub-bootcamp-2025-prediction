@@ -113,14 +113,14 @@ def simplified_version_page():
 
         # Update session state from dropdown selection
         if selected_station_from_dropdown and "scode" in selected_station_from_dropdown:
-            dropdown_station_id = int(selected_station_from_dropdown["scode"])
+            dropdown_station_id = selected_station_from_dropdown["scode"]
             if dropdown_station_id != st.session_state.selected_station_id:
                 st.session_state.selected_station_id = dropdown_station_id
                 # No rerun here to prevent infinite loop
 
         # Now get the complete station data for display
         current_station_data = next(
-            (s for s in all_stations if int(s["scode"]) == st.session_state.selected_station_id), None)
+            (s for s in all_stations if s["scode"] == st.session_state.selected_station_id), None)
 
         if current_station_data:
             # Display station info
