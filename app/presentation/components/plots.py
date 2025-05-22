@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 import pickle as pkl
 
-from task2 import load_data, create_features
+from bootcamp_task.task2 import load_data, create_features
 
 
 def render_data_plot(df):

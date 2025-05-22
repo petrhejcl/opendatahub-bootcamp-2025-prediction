@@ -2,12 +2,12 @@ from get_data import get_stations, get_data
 import streamlit as st
 from datetime import date
 
-from tabs.model_training import model_training_page
-from tabs.occupancy_prediction import occupancy_prediction_page
-from tabs.plots import plots_page
+from app.domain.prediction import model_training
+from app.domain.prediction import occupancy_prediction
+from app.presentation.components.plots import plots_page
 
 
-def normal_version_page():
+def NormalVersionPage():
     station = st.selectbox(
         label="Select the parking",
         options=get_stations(),
@@ -31,9 +31,9 @@ def normal_version_page():
     )
 
     with predict_tab:
-        occupancy_prediction_page()
+        occupancy_prediction()
     with train_tab:
-        model_training_page(station, start_date, end_date)
+        model_training(station, start_date, end_date)
     with plots_tab:
         try:
             plots_page()

@@ -1,5 +1,5 @@
 import streamlit as st
-from task2 import load_data, create_features, train_model
+from bootcamp_task.task2 import load_data, create_features, train_model
 import pickle as pkl
 
 from get_data import get_data

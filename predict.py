@@ -288,7 +288,7 @@ def parse_prediction_time(time_str):
 
 def predict(prediction_time_str=None, use_stored_model=True,):
     # Load data
-    file_path = "parking.csv"  # Update with your file path
+    file_path = "data/parking.csv"  # Update with your file path
 
     try:
         df = load_data(file_path)
@@ -304,20 +304,20 @@ def predict(prediction_time_str=None, use_stored_model=True,):
 
     if use_stored_model:
         try:
-            model = pkl.load(open("rf.pkl", "rb"))
-            feature_cols = pkl.load(open("rf_feature_cols.pkl", "rb"))
+            model = pkl.load(open("models/rf.pkl", "rb"))
+            feature_cols = pkl.load(open("models/rf_feature_cols.pkl", "rb"))
             print("Loaded saved model.")
         except FileNotFoundError:
             print("Saved model not found. Training a new model...")
             model, feature_cols = train_model(df_features)
-            pkl.dump(model, open("rf.pkl", "wb"))
-            pkl.dump(feature_cols, open("rf_feature_cols.pkl", "wb"))
+            pkl.dump(model, open("models/rf.pkl", "wb"))
+            pkl.dump(feature_cols, open("models/rf_feature_cols.pkl", "wb"))
     else:
         # Train model
         print("Training a new model...")
         model, feature_cols = train_model(df_features)
-        pkl.dump(model, open("rf.pkl", "wb"))
-        pkl.dump(feature_cols, open("rf_feature_cols.pkl", "wb"))
+        pkl.dump(model, open("models/rf.pkl", "wb"))
+        pkl.dump(feature_cols, open("models/rf_feature_cols.pkl", "wb"))
 
     # # Plot predicted vs actual
     # print("\nGenerating predicted vs actual comparison plots...")
