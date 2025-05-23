@@ -1,0 +1,15 @@
+2025-05-23 11:48:35,486 - parking_prediction - INFO - Making request to: https://mobility.api.opendatahub.com/v2/flat/ParkingStation
+2025-05-23 11:48:35,701 - parking_prediction - INFO - Response status: 200
+2025-05-23 11:48:35,701 - parking_prediction - INFO - Request successful, received 46 data points
+2025-05-23 11:48:35,701 - parking_prediction - INFO - Raw response keys: dict_keys(['offset', 'data', 'limit'])
+2025-05-23 11:48:35,701 - parking_prediction - INFO - Number of stations in response: 46
+2025-05-23 11:48:35,701 - parking_prediction - INFO - Sample station data keys: ['scode', 'scoordinate', 'smetadata.municipality', 'sname']
+2025-05-23 11:48:35,701 - parking_prediction - INFO - First station sample: {'scode': '102', 'scoordinate': {'x': 11.356305, 'y': 46.496449, 'srid': 4326}, 'smetadata.municipality': 'Bolzano - Bozen', 'sname': 'P02 - City parking'}
+2025-05-23 11:48:35,701 - parking_prediction - INFO - Processing station 0: {'scode': '102', 'scoordinate': {'x': 11.356305, 'y': 46.496449, 'srid': 4326}, 'smetadata.municipality': 'Bolzano - Bozen', 'sname': 'P02 - City parking'}
+2025-05-23 11:48:35,701 - parking_prediction - INFO - Station scode type: <class 'str'>, value: 102
+2025-05-23 11:48:35,701 - parking_prediction - INFO - Processing station 1: {'scode': '103', 'scoordinate': {'x': 11.355115, 'y': 46.497805, 'srid': 4326}, 'smetadata.municipality': 'Bolzano - Bozen', 'sname': 'P03 - Piazza Walther'}
+2025-05-23 11:48:35,701 - parking_prediction - INFO - Station scode type: <class 'str'>, value: 103
+2025-05-23 11:48:35,701 - parking_prediction - INFO - Processing station 2: {'scode': '104', 'scoordinate': {'x': 11.358216, 'y': 46.500551, 'srid': 4326}, 'smetadata.municipality': 'Bolzano - Bozen', 'sname': 'P04 - Luna via Molini'}
+2025-05-23 11:48:35,705 - parking_prediction - INFO - Station scode type: <class 'str'>, value: 104
+2025-05-23 11:48:35,705 - parking_prediction - INFO - Retrieved 46 parking stations
+2025-05-23 11:48:35,705 - parking_prediction - ERROR - Simplified version page error: argument of type 'ParkingStation' is not iterable
