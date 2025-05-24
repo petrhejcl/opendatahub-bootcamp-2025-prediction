@@ -1,4 +1,4 @@
-from get_data import get_stations, get_data
+from app.data_access.get_data import get_stations, get_data
 import streamlit as st
 from datetime import date
 

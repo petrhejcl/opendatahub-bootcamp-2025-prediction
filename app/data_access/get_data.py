@@ -35,7 +35,7 @@ def get_data(station_code, start_date, end_date) -> pd.DataFrame:
         print("Warning: API returned empty data array")
         return pd.DataFrame(columns=["mvalidtime", "free", "occupied"])
 
-    csv_filename = "data/parking.csv"
+    csv_filename = "parking.csv"
 
     try:
         with open(csv_filename, "w", newline="") as csvfile:

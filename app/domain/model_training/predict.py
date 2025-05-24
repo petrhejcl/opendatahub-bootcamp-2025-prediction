@@ -288,7 +288,7 @@ def parse_prediction_time(time_str):
 
 def predict(prediction_time_str=None, use_stored_model=True,):
     # Load data
-    file_path = "data/parking.csv"  # Update with your file path
+    file_path = "../app/data_access/parking.csv"  # Update with your file path
 
     try:
         df = load_data(file_path)

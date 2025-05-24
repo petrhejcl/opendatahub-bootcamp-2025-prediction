@@ -2,7 +2,7 @@ import streamlit as st
 from bootcamp_task.task2 import load_data, create_features, train_model
 import pickle as pkl
 
-from get_data import get_data
+from app.data_access.get_data import get_data
 
 def model_training_page(station,start_date,end_date):
     get_data(station_code=station["scode"], start_date=start_date, end_date=end_date)

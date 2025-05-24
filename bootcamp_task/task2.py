@@ -258,7 +258,7 @@ def visualize_parking_data(df):
 
 def main(use_stored_model=True):
     # Load data
-    file_path = "../data/parking.csv"  # Update with your file path
+    file_path = "../app/data_access/parking.csv"  # Update with your file path
     try:
         df = load_data(file_path)
         print(f"Loaded {len(df)} records from {file_path}")
@@ -272,13 +272,13 @@ def main(use_stored_model=True):
     print(f"Created features. Shape: {df_features.shape}")
 
     if use_stored_model:
-        model = pkl.load(open("../models/rf.pkl", "rb"))
-        feature_cols = pkl.load(open("../models/rf_feature_cols.pkl", "rb"))
+        model = pkl.load(open("app/domain/model_training/rf.pkl", "rb"))
+        feature_cols = pkl.load(open("app/domain/model_training/rf_feature_cols.pkl", "rb"))
     else:
         # Train model
         model, feature_cols = train_model(df_features)
-        pkl.dump(model, open("../models/rf.pkl", "wb"))
-        pkl.dump(feature_cols, open("../models/rf_feature_cols.pkl", "wb"))
+        pkl.dump(model, open("app/domain/model_training/rf.pkl", "wb"))
+        pkl.dump(feature_cols, open("app/domain/model_training/rf_feature_cols.pkl", "wb"))
 
     # Plot predicted vs actual
     print("\nGenerating predicted vs actual comparison plots...")

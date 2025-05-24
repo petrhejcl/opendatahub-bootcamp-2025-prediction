@@ -45,7 +45,7 @@ try:
     print(response.status_code)
     data = response.json().get("data")  # Parse JSON response
 
-    with open("../data/parking.csv", "w", newline="") as csvfile:
+    with open("../app/data_access/parking.csv", "w", newline="") as csvfile:
         parking_writer = csv.writer(
             csvfile, delimiter=",", quotechar="|", quoting=csv.QUOTE_MINIMAL
         )
