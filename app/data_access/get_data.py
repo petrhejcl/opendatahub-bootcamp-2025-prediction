@@ -3,7 +3,6 @@ import json
 import csv
 import pandas as pd
 import os
-from datetime import datetime
 
 from app.infrastructure.authentication import AuthenticationService
 

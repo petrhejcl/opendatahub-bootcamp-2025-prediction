@@ -1,7 +1,6 @@
 import streamlit as st
 from app.presentation.pages.simplified_version import SimplifiedVersionPage
 from app.presentation.pages.normal_version import NormalVersionPage
-from app.infrastructure.authentication import get_prediction_service, get_station_service
 
 
 def main():

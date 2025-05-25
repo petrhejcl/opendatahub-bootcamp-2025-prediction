@@ -7,6 +7,7 @@ class AuthenticationService:
         self.client_id = "opendatahub-bootcamp-2025"
         self.client_secret = "QiMsLjDpLi5ffjKRkI7eRgwOwNXoU9l1"
 
+    @staticmethod
     def get_token(self) -> Optional[str]:
         headers = {"Content-Type": "application/x-www-form-urlencoded"}
         data = {
