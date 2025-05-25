@@ -1,4 +1,3 @@
-# app/service/prediction_service.py
 from datetime import datetime
 from app.domain.prediction.occupancy_prediction import OccupancyPredictor
 from app.data_access.model_repository import ModelRepository

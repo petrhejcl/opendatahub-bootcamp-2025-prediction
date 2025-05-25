@@ -1,4 +1,3 @@
-# app/data_access/parking_repository.py
 from typing import List
 from datetime import datetime
 from ..domain.models.parking_data import ParkingData

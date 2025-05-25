@@ -1,4 +1,3 @@
-# app/domain/prediction/occupancy_prediction.py
 from datetime import datetime
 import pandas as pd
 import pickle as pkl

@@ -1,9 +1,9 @@
 import requests
 import json
-from .auth import get_bearer_token
+from app.infrastructure.authentication import AuthenticationService
 
 def make_request(url: str):
-    token = get_bearer_token()
+    token = AuthenticationService.get_token()
     if not token:
         return None
 

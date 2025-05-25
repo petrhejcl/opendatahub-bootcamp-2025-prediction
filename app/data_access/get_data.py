@@ -5,6 +5,8 @@ import pandas as pd
 import os
 from datetime import datetime
 
+from app.infrastructure.authentication import AuthenticationService
+
 
 def get_data(station_code, start_date, end_date) -> pd.DataFrame:
     # Ensure station_code is a string
@@ -94,42 +96,14 @@ def get_data(station_code, start_date, end_date) -> pd.DataFrame:
         return pd.DataFrame(columns=["mvalidtime", "free", "occupied"])
 
 
-def get_bearer_token():
-    token_url = (
-        "https://auth.opendatahub.com/auth/realms/noi/protocol/openid-connect/token"
-    )
-
-    token_headers = {"Content-Type": "application/x-www-form-urlencoded"}
-
-    token_body = {
-        "grant_type": "client_credentials",
-        # TODO: Add these to env secrets
-        "client_id": "opendatahub-bootcamp-2025",
-        "client_secret": "QiMsLjDpLi5ffjKRkI7eRgwOwNXoU9l1",
-    }
-
-    try:
-        token_response = requests.post(token_url, headers=token_headers, data=token_body)
-        token_response.raise_for_status()  # Raise exception for HTTP errors
-        token_data = token_response.json()
-        print("Token obtained successfully")
-        return token_data.get("access_token")
-    except requests.RequestException as e:
-        print(f"Failed to get bearer token: {e}")
-        return None
-    except json.JSONDecodeError:
-        print("Token response was not valid JSON.")
-        return None
-
-
 def make_request(url: str):
-    bearer_token = get_bearer_token()
+    token = AuthenticationService.get_token()
 
-    if bearer_token is None:
+    if token is None:
         print("Authentication failed. Cannot proceed with request.")
         return None
 
-    headers = {"Authorization": f"Bearer {bearer_token}", "Accept": "application/json"}
+    headers = {"Authorization": f"Bearer {token}", "Accept": "application/json"}
     try:
         print(f"Making request to: {url}")
         response = requests.get(url, headers=headers)

@@ -1,4 +1,3 @@
-# app/presentation/pages/simplified_version.py
 import streamlit as st
 from datetime import datetime
 from folium import Map, CircleMarker

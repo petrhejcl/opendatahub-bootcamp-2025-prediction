@@ -1,8 +1,7 @@
-# app/presentation/pages/occupancy_prediction.py
 import streamlit as st
 from datetime import datetime
-from ...service.prediction_service import PredictionService
-from ...infrastructure.dependencies import get_prediction_service
+from app.services.prediction_service import PredictionService
+from app.infrastructure.dependencies import get_prediction_service
 
 
 def occupancy_prediction_page():

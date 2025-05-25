@@ -1,4 +1,3 @@
-# app/data_access/model_repository.py
 import pickle as pkl
 from pathlib import Path
 from sklearn.ensemble import RandomForestRegressor

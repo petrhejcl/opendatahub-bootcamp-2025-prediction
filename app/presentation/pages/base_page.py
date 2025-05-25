@@ -1,4 +1,3 @@
-# app/presentation/pages/base_page.py
 from abc import ABC, abstractmethod
 from ...services.prediction_service import PredictionService
 from ...services.station_service import StationService
