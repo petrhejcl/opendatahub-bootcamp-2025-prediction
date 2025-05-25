@@ -3,7 +3,7 @@ from datetime import datetime
 from app.services.prediction_service import PredictionService
 from app.infrastructure.dependencies import get_prediction_service
 
-
+# TODO to check
 def occupancy_prediction_page():
     prediction_service = get_prediction_service()
 

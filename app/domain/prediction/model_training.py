@@ -4,6 +4,8 @@ import pickle as pkl
 
 from app.data_access.get_data import get_data
 
+
+ # TODO check if is used
 def model_training_page(station,start_date,end_date):
     get_data(station_code=station["scode"], start_date=start_date, end_date=end_date)
     df = load_data("parking.csv")

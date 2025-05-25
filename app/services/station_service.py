@@ -1,11 +1,11 @@
-from typing import List
-from typing import Optional
+# app/services/station_service.py
+from typing import List, Optional
 from ..data_access.station_repository import StationRepository
 from ..domain.models.station import Station
 
 class StationService:
-    def __init__(self, station_repository: StationRepository):
-        self._repository = station_repository
+    def __init__(self, station_repository: StationRepository = None):
+        self._repository = station_repository or StationRepository()
 
     def get_all_stations(self) -> List[Station]:
         return self._repository.get_all_stations()

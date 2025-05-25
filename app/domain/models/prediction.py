@@ -1,6 +1,7 @@
+# app/domain/models/prediction.py
 from dataclasses import dataclass
 from datetime import datetime
-from typing import List, Optional
+from typing import Dict, Optional
 
 @dataclass
 class PredictionFeatures:
@@ -12,7 +13,7 @@ class PredictionFeatures:
     free: int
     occupied: int
     rate_of_change: float
-    lag_features: dict[int, int]
+    lag_features: Dict[int, int]
 
 @dataclass
 class PredictionResult:

@@ -1,7 +1,8 @@
-from datetime import datetime
+# app/domain/prediction/occupancy_prediction.py
+from datetime import datetime, timedelta
 import pandas as pd
-import pickle as pkl
-from typing import Tuple
+import numpy as np
+from typing import Optional
 from ..models.prediction import PredictionFeatures, PredictionResult
 from ...data_access.model_repository import ModelRepository
 from ...data_access.parking_repository import ParkingRepository
@@ -13,13 +14,17 @@ class OccupancyPredictor:
         self._parking_repository = parking_repository
         self._model = None
         self._feature_cols = None
-        self._load_model()
 
     def _load_model(self):
+        """Load model and feature columns"""
         self._model = self._model_repository.load_model()
         self._feature_cols = self._model_repository.load_feature_columns()
 
+        if self._model is None or self._feature_cols is None:
+            raise ValueError("Model or feature columns not found. Train a model first.")
+
     def _create_features(self, df: pd.DataFrame) -> pd.DataFrame:
+        """Create features for prediction"""
         df = df.copy()
 
         # Extract datetime features
@@ -38,59 +43,53 @@ class OccupancyPredictor:
 
         # Calculate rate of change
         df["rate_of_change"] = (df["free"] - df["free_lag_1"]) / df["time_diff"]
+        df["rate_of_change"] = df["rate_of_change"].fillna(0)
 
         return df
 
-    def _prepare_prediction_data(self, df: pd.DataFrame, prediction_time: datetime) -> PredictionFeatures:
-        latest_data = df.iloc[-1:].copy()
-
-        features = PredictionFeatures(
-            hour=prediction_time.hour,
-            day_of_week=prediction_time.weekday(),
-            day_of_month=prediction_time.day,
-            month=prediction_time.month,
-            year=prediction_time.year,
-            free=latest_data["free"].iloc[0],
-            occupied=latest_data["occupied"].iloc[0],
-            rate_of_change=latest_data["rate_of_change"].iloc[0],
-            lag_features={
-                i: latest_data[f"free_lag_{i}"].iloc[0]
-                for i in range(1, 13)
-                if f"free_lag_{i}" in latest_data.columns
-            }
-        )
-
-        return features
-
     def predict(self, station_code: str, prediction_time: datetime) -> PredictionResult:
-        # Get historical data
-        df = self._parking_repository.get_parking_data(station_code)
+        """Make prediction for given station and time"""
+
+        # Load model if not already loaded
+        if self._model is None:
+            self._load_model()
+
+        # Get historical data (last 7 days)
+        end_date = datetime.now()
+        start_date = end_date - timedelta(days=7)
+
+        df = self._parking_repository.get_parking_dataframe(station_code, start_date, end_date)
+
         if df is None or df.empty:
             raise ValueError("No data available for prediction")
 
         # Create features
         df_features = self._create_features(df)
 
-        # Prepare prediction data
-        features = self._prepare_prediction_data(df_features, prediction_time)
+        # Get the most recent complete row
+        latest_data = df_features.dropna().iloc[-1:].copy()
 
-        # Convert features to model input format
-        X_pred = pd.DataFrame([{
-            "hour": features.hour,
-            "day_of_week": features.day_of_week,
-            "day_of_month": features.day_of_month,
-            "month": features.month,
-            "year": features.year,
-            "free": features.free,
-            "occupied": features.occupied,
-            "rate_of_change": features.rate_of_change,
-            **{f"free_lag_{k}": v for k, v in features.lag_features.items()}
-        }])
+        if latest_data.empty:
+            raise ValueError("No complete data available for prediction")
+
+        # Create prediction row
+        prediction_row = latest_data.copy()
+        prediction_row["hour"] = prediction_time.hour
+        prediction_row["day_of_week"] = prediction_time.weekday()
+        prediction_row["day_of_month"] = prediction_time.day
+        prediction_row["month"] = prediction_time.month
+        prediction_row["year"] = prediction_time.year
+
+        # Ensure all required features are present
+        for col in self._feature_cols:
+            if col not in prediction_row.columns:
+                prediction_row[col] = 0
 
         # Make prediction
-        predicted_spaces = self._model.predict(X_pred[self._feature_cols])[0]
+        X_pred = prediction_row[self._feature_cols]
+        predicted_spaces = self._model.predict(X_pred)[0]
 
         return PredictionResult(
             prediction_time=prediction_time,
-            predicted_spaces=round(predicted_spaces)
+            predicted_spaces=max(0, round(predicted_spaces))  # Ensure non-negative
         )

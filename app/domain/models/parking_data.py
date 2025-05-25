@@ -1,3 +1,4 @@
+# app/domain/models/parking_data.py
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
