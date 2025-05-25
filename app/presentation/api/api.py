@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request
-from app.domain import make_prediction
-from app.utils import load_data
+from app.services import make_prediction
+from app.services import load_data
 
 app = Flask(__name__)
 
