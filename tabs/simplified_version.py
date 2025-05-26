@@ -1,13 +1,12 @@
+import datetime
+
+import folium
+import streamlit as st
+from dateutil.relativedelta import relativedelta
 from dateutil.utils import today
-from networkx.classes import is_empty
+from streamlit_folium import st_folium
 
 from get_data import get_stations, get_data
-import streamlit as st
-from streamlit_folium import st_folium
-import folium
-import datetime
-from dateutil.relativedelta import relativedelta
-
 from predict import predict
 from tabs.occupancy_prediction import get_current_time
 
