@@ -19,15 +19,15 @@ class ModelConfig:
 
 @dataclass
 class AppConfig:
-    csv_file_path: str = "parking.csv"
+    csv_file_path: str = "data/parking.csv"
     opendatahub: OpenDataHubConfig = None
     model: ModelConfig = None
 
     def __post_init__(self):
         if self.opendatahub is None:
             self.opendatahub = OpenDataHubConfig(
-                client_id="your_client_id",
-                client_secret="your_client_secret",
+                client_id="opendatahub-bootcamp-2025",
+                client_secret="QiMsLjDpLi5ffjKRkI7eRgwOwNXoU9l1",
                 token_url="https://auth.opendatahub.com/auth/realms/noi/protocol/openid-connect/token",
                 base_url="https://mobility.api.opendatahub.com/v2"
             )

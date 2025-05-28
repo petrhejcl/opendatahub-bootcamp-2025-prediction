@@ -258,7 +258,7 @@ def visualize_parking_data(df):
 
 def main(use_stored_model=True):
     # Load data
-    file_path = "parking.csv"  # Update with your file path
+    file_path = "data/parking.csv"  # Update with your file path
     try:
         df = load_data(file_path)
         print(f"Loaded {len(df)} records from {file_path}")
