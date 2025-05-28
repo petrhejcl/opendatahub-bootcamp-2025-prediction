@@ -3,6 +3,7 @@ import datetime
 
 
 def get_current_time():
+    """Get current time rounded to nearest 5-minute interval"""
     now = datetime.datetime.now()
     rounded_minute = 5 * round(now.minute / 5)
 
@@ -11,4 +12,4 @@ def get_current_time():
     else:
         rounded_time = now.replace(minute=rounded_minute, second=0, microsecond=0)
 
-    return rounded_time
+    return rounded_time.time()  # Return time object, not datetime

@@ -48,45 +48,94 @@ class ParkingApplicationService:
 
     def fetch_parking_data(self, station_code: str, start_date: str, end_date: str) -> List[VisualizationDataDTO]:
         """Caso d'uso: Recuperare dati parcheggio per visualizzazione"""
-        start_dt = datetime.strptime(start_date, "%Y-%m-%d")
-        end_dt = datetime.strptime(end_date, "%Y-%m-%d")
+        try:
+            start_dt = datetime.strptime(start_date, "%Y-%m-%d")
+            end_dt = datetime.strptime(end_date, "%Y-%m-%d")
 
-        parking_data = self.data_repository.get_parking_data(station_code, start_dt, end_dt)
-        self._current_parking_data = parking_data
+            print(f"Fetching parking data for station {station_code} from {start_date} to {end_date}")
 
-        # Restituisce DTO invece di DataFrame
-        return [
-            VisualizationDataDTO(
-                timestamp=item.timestamp,
-                free_spaces=item.free_spaces,
-                occupied_spaces=item.occupied_spaces,
-                hour=item.timestamp.hour
-            ) for item in parking_data
-        ]
+            parking_data = self.data_repository.get_parking_data(station_code, start_dt, end_dt)
+
+            if not parking_data:
+                print("No parking data retrieved from repository")
+                return []
+
+            print(f"Retrieved {len(parking_data)} parking data points")
+
+            # Store current data for training and prediction
+            self._current_parking_data = parking_data
+
+            # Return DTO for visualization
+            return [
+                VisualizationDataDTO(
+                    timestamp=item.timestamp,
+                    free_spaces=item.free_spaces,
+                    occupied_spaces=item.occupied_spaces,
+                    hour=item.timestamp.hour
+                ) for item in parking_data
+            ]
+
+        except Exception as e:
+            print(f"Error fetching parking data: {e}")
+            return []
 
     def train_model(self, training_request: TrainingRequestDTO) -> Tuple[Any, List[str]]:
         """Caso d'uso: Addestrare modello ML"""
-        if not self._current_parking_data:
-            self.fetch_parking_data(
-                training_request.station_code,
-                training_request.start_date,
-                training_request.end_date
-            )
+        try:
+            print(f"Training model for station {training_request.station_code}")
 
-        model, feature_cols = self.training_service.train_model(self._current_parking_data)
-        self.model_repository.save_model(model, feature_cols)
-        return model, feature_cols
+            # Ensure we have data
+            if not self._current_parking_data:
+                print("No current data available, fetching...")
+                self.fetch_parking_data(
+                    training_request.station_code,
+                    training_request.start_date,
+                    training_request.end_date
+                )
+
+            if not self._current_parking_data:
+                raise ValueError("No data available for training. Please fetch data first.")
+
+            print(f"Training with {len(self._current_parking_data)} data points")
+
+            # Train the model
+            model, feature_cols = self.training_service.train_model(self._current_parking_data)
+
+            # Save the model
+            self.model_repository.save_model(model, feature_cols)
+            print("Model trained and saved successfully")
+
+            return model, feature_cols
+
+        except Exception as e:
+            print(f"Error training model: {e}")
+            raise
 
     def predict_occupancy(self, prediction_time: datetime) -> Optional[int]:
         """Caso d'uso: Predire occupazione parcheggio"""
-        if not self._current_parking_data:
-            return None
+        try:
+            if not self._current_parking_data:
+                print("No current parking data available for prediction")
+                return None
 
-        return self.prediction_service.predict_free_spaces(
-            self._current_parking_data,
-            prediction_time,
-            True
-        )
+            print(f"Predicting occupancy for {prediction_time}")
+
+            result = self.prediction_service.predict_free_spaces(
+                self._current_parking_data,
+                prediction_time,
+                True
+            )
+
+            if result is not None:
+                print(f"Prediction result: {result} free spaces")
+            else:
+                print("Prediction failed")
+
+            return result
+
+        except Exception as e:
+            print(f"Error predicting occupancy: {e}")
+            return None
 
     def get_visualization_data(self) -> List[VisualizationDataDTO]:
         """Caso d'uso: Ottenere dati per visualizzazione"""
@@ -108,6 +157,7 @@ class ParkingApplicationService:
             return None
 
         try:
+            print("Evaluating model performance")
             model, feature_cols = self.model_repository.load_model()
             performance = self.training_service.evaluate_model(model, feature_cols, self._current_parking_data)
 

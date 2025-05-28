@@ -12,8 +12,8 @@ class OpenDataHubConfig:
 
 @dataclass
 class ModelConfig:
-    model_path: str = "rf.pkl"
-    features_path: str = "rf_feature_cols.pkl"
+    model_path: str = "models/rf.pkl"
+    features_path: str = "models/rf_feature_cols.pkl"
 
 
 @dataclass
