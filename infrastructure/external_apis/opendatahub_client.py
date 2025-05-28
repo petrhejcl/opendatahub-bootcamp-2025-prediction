@@ -1,4 +1,3 @@
-# infrastructure/external_apis.py
 import requests
 import json
 from typing import List, Dict, Optional

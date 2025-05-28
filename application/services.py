@@ -1,14 +1,15 @@
 # application/services.py
-import pandas as pd
 from datetime import datetime
 from typing import List, Optional, Tuple, Any
 from domain.entities import ParkingStation, ParkingData, ModelPerformance
 from domain.repositories import IParkingStationRepository, IParkingDataRepository, IMLModelRepository
-from application.interfaces import IDataProcessingService, IModelTrainingService, IPredictionService
+from domain.interfaces import IDataProcessingService, IModelTrainingService, IPredictionService
 from application.dtos import StationDTO, TrainingRequestDTO, VisualizationDataDTO, ModelPerformanceDTO, CoordinateDTO
 
 
 class ParkingApplicationService:
+    """Servizio applicativo - orchestrazione casi d'uso"""
+
     def __init__(
         self,
         station_repository: IParkingStationRepository,
@@ -27,12 +28,12 @@ class ParkingApplicationService:
         self._current_parking_data: List[ParkingData] = []
 
     def get_all_stations(self) -> List[StationDTO]:
-        """Get all parking stations"""
+        """Caso d'uso: Ottenere tutte le stazioni"""
         stations = self.station_repository.get_all_stations()
         return [self._station_to_dto(station) for station in stations]
 
     def get_station_coordinates(self) -> List[CoordinateDTO]:
-        """Get station coordinates for map visualization"""
+        """Caso d'uso: Ottenere coordinate per visualizzazione mappa"""
         stations = self.station_repository.get_all_stations()
         coordinates = []
         for station in stations:
@@ -45,30 +46,26 @@ class ParkingApplicationService:
                 ))
         return coordinates
 
-    def fetch_parking_data(self, station_code: str, start_date: str, end_date: str) -> pd.DataFrame:
-        """Fetch parking data for a specific station and date range"""
+    def fetch_parking_data(self, station_code: str, start_date: str, end_date: str) -> List[VisualizationDataDTO]:
+        """Caso d'uso: Recuperare dati parcheggio per visualizzazione"""
         start_dt = datetime.strptime(start_date, "%Y-%m-%d")
         end_dt = datetime.strptime(end_date, "%Y-%m-%d")
 
         parking_data = self.data_repository.get_parking_data(station_code, start_dt, end_dt)
-
-        # Store for later use
         self._current_parking_data = parking_data
 
-        # Convert to DataFrame for compatibility with existing UI
-        data = []
-        for item in parking_data:
-            data.append({
-                'mvalidtime': item.timestamp,
-                'free': item.free_spaces,
-                'occupied': item.occupied_spaces
-            })
-
-        return pd.DataFrame(data)
+        # Restituisce DTO invece di DataFrame
+        return [
+            VisualizationDataDTO(
+                timestamp=item.timestamp,
+                free_spaces=item.free_spaces,
+                occupied_spaces=item.occupied_spaces,
+                hour=item.timestamp.hour
+            ) for item in parking_data
+        ]
 
     def train_model(self, training_request: TrainingRequestDTO) -> Tuple[Any, List[str]]:
-        """Train a machine learning model"""
-        # Get parking data if not already loaded
+        """Caso d'uso: Addestrare modello ML"""
         if not self._current_parking_data:
             self.fetch_parking_data(
                 training_request.station_code,
@@ -76,16 +73,12 @@ class ParkingApplicationService:
                 training_request.end_date
             )
 
-        # Train model
         model, feature_cols = self.training_service.train_model(self._current_parking_data)
-
-        # Save model
         self.model_repository.save_model(model, feature_cols)
-
         return model, feature_cols
 
     def predict_occupancy(self, prediction_time: datetime) -> Optional[int]:
-        """Predict parking occupancy at a specific time"""
+        """Caso d'uso: Predire occupazione parcheggio"""
         if not self._current_parking_data:
             return None
 
@@ -96,7 +89,7 @@ class ParkingApplicationService:
         )
 
     def get_visualization_data(self) -> List[VisualizationDataDTO]:
-        """Get data for visualization in DTO format"""
+        """Caso d'uso: Ottenere dati per visualizzazione"""
         if not self._current_parking_data:
             return []
 
@@ -109,15 +102,8 @@ class ParkingApplicationService:
             ) for item in self._current_parking_data
         ]
 
-    def get_processed_data_for_plots(self) -> pd.DataFrame:
-        """Get processed data for visualization"""
-        if not self._current_parking_data:
-            return pd.DataFrame()
-
-        return self.data_processing_service.create_features(self._current_parking_data)
-
     def evaluate_model_performance(self) -> Optional[ModelPerformanceDTO]:
-        """Evaluate the performance of the current model"""
+        """Caso d'uso: Valutare performance modello"""
         if not self._current_parking_data or not self.model_repository.model_exists():
             return None
 
@@ -125,7 +111,6 @@ class ParkingApplicationService:
             model, feature_cols = self.model_repository.load_model()
             performance = self.training_service.evaluate_model(model, feature_cols, self._current_parking_data)
 
-            # Convert to DTO
             return ModelPerformanceDTO(
                 actual_values=performance.actual_values,
                 predicted_values=performance.predicted_values,
@@ -138,7 +123,7 @@ class ParkingApplicationService:
             return None
 
     def _station_to_dto(self, station: ParkingStation) -> StationDTO:
-        """Convert ParkingStation entity to DTO"""
+        """Converte entità in DTO"""
         scoordinate = None
         if station.latitude and station.longitude:
             scoordinate = {"x": station.longitude, "y": station.latitude}

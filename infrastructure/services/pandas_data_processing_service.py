@@ -1,14 +1,17 @@
 # infrastructure/services/pandas_data_processing_service.py
 import pandas as pd
 import numpy as np
-from typing import List, Tuple
+from typing import List, Tuple, Any
 from datetime import datetime
 from domain.entities import ParkingData
-from application.interfaces import IDataProcessingService
+from domain.interfaces import IDataProcessingService
 
 
 class PandasDataProcessingService(IDataProcessingService):
-    def create_features(self, parking_data: List[ParkingData]) -> pd.DataFrame:
+    """Implementazione concreta usando pandas - Infrastructure layer"""
+
+    def create_features(self, parking_data: List[ParkingData]) -> Any:
+        """Restituisce Any invece di DataFrame per rispettare l'interfaccia"""
         if not parking_data:
             return pd.DataFrame()
 
@@ -44,9 +47,12 @@ class PandasDataProcessingService(IDataProcessingService):
         # Create target variable
         df["target"] = df["free"].shift(-12)
 
-        return df
+        return df  # Restituisce DataFrame ma tipizzato come Any
 
-    def prepare_training_data(self, df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame, List[str]]:
+    def prepare_training_data(self, processed_data: Any) -> Tuple[Any, Any, List[str]]:
+        """Prepara dati per training - processed_data è il DataFrame dal metodo precedente"""
+        df = processed_data  # Cast implicito da Any a DataFrame
+
         feature_cols = [
             "hour", "day_of_week", "day_of_month", "month", "year",
             "free", "occupied", "rate_of_change"
@@ -63,5 +69,3 @@ class PandasDataProcessingService(IDataProcessingService):
         y = clean_df["target"]
 
         return X, y, feature_cols
-
-

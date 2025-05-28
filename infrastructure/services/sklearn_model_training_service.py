@@ -1,10 +1,10 @@
 # infrastructure/services/sklearn_model_training_service.py
-import pandas as pd
+import numpy as np
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
 from typing import List, Tuple, Any
 from domain.entities import ParkingData, ModelPerformance
-from application.interfaces import IModelTrainingService
+from domain.interfaces import IModelTrainingService
 from infrastructure.services.pandas_data_processing_service import PandasDataProcessingService
 
 
@@ -51,5 +51,3 @@ class SklearnModelTrainingService(IModelTrainingService):
             mae=mae,
             rmse=rmse
         )
-
-

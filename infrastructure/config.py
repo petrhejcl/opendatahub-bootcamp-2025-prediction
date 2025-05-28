@@ -1,6 +1,5 @@
 # infrastructure/config.py
 from dataclasses import dataclass
-from typing import Optional
 
 
 @dataclass
@@ -19,7 +18,6 @@ class ModelConfig:
 
 @dataclass
 class AppConfig:
-    csv_file_path: str = "data/parking.csv"
     opendatahub: OpenDataHubConfig = None
     model: ModelConfig = None
 

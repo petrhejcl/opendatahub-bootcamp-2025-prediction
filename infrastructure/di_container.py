@@ -19,7 +19,7 @@ class DIContainer:
 
         # Repository implementations
         self._station_repo = ApiParkingStationRepository(self._api_client)
-        self._data_repo = ApiParkingDataRepository(self._api_client, self.config.csv_file_path)
+        self._data_repo = ApiParkingDataRepository(self._api_client)
         self._model_repo = FileModelRepository(self.config.model.model_path, self.config.model.features_path)
 
         # Service implementations

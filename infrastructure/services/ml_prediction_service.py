@@ -1,10 +1,9 @@
 # infrastructure/services/ml_prediction_service.py
-import pandas as pd
 from datetime import datetime
-from typing import Optional, Any, List
+from typing import Optional, List
 from domain.entities import ParkingData
 from domain.repositories import IMLModelRepository
-from application.interfaces import IPredictionService, IDataProcessingService
+from domain.interfaces import IPredictionService, IDataProcessingService
 
 
 class MLPredictionService(IPredictionService):

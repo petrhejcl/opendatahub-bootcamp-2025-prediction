@@ -1,15 +1,16 @@
-# main.py - Entry point dell'applicazione
+# main.py
 from infrastructure.di_container import DIContainer
 from presentation.app import ParkingApp
 
 
 def main():
-    """Entry point dell'applicazione"""
-    # Crea il container DI e il servizio applicativo
-    container = DIContainer()
-    app_service = container.create_application_service()
+    # Initialize dependency injection container
+    di_container = DIContainer()
 
-    # Inizializza e avvia l'app
+    # Create application service
+    app_service = di_container.create_application_service()
+
+    # Create and run Streamlit app
     app = ParkingApp(app_service)
     app.run()
 
