@@ -1,13 +1,13 @@
 # infrastructure/di_container.py
 from infrastructure.config import AppConfig
 from infrastructure.external_apis.opendatahub_client import OpenDataHubClient
-from infrastructure.repositories.api_parking_station_repository import ApiParkingStationRepository
-from infrastructure.repositories.api_parking_data_repository import ApiParkingDataRepository
+from infrastructure.repositories.csv_parking_data_repository import CsvParkingDataRepository
 from infrastructure.repositories.file_model_repository import FileModelRepository
 from infrastructure.services.pandas_data_processing_service import PandasDataProcessingService
 from infrastructure.services.sklearn_model_training_service import SklearnModelTrainingService
 from infrastructure.services.ml_prediction_service import MLPredictionService
 from application.services import ParkingApplicationService
+from infrastructure.repositories.opendatahub_station_repository import OpenDataHubStationRepository
 
 
 class DIContainer:
@@ -18,8 +18,8 @@ class DIContainer:
         self._api_client = OpenDataHubClient(self.config.opendatahub)
 
         # Repository implementations
-        self._station_repo = ApiParkingStationRepository(self._api_client)
-        self._data_repo = ApiParkingDataRepository(self._api_client)
+        self._station_repo = OpenDataHubStationRepository(self._api_client)
+        self._data_repo = CsvParkingDataRepository(self._api_client, self.config.csv_file_path)
         self._model_repo = FileModelRepository(self.config.model.model_path, self.config.model.features_path)
 
         # Service implementations

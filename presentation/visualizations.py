@@ -12,7 +12,7 @@ class ParkingDataVisualizer:
     """Visualizer per i dati di parcheggio - solo logica di presentazione"""
 
     def render_data_plot(self, visualization_data: List[VisualizationDataDTO]) -> None:
-        """Render basic parking data plots usando DTOs"""
+        """Render basic parking data plots using DTOs"""
         if not visualization_data:
             st.warning("No data available for visualization")
             return

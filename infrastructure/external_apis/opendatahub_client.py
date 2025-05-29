@@ -48,6 +48,9 @@ class OpenDataHubClient:
         response = self._make_request(url)
         return response.get("data", []) if response else []
 
+    def get_stations(self) -> List[Dict]:
+        return self.get_stations_data()
+
     def get_parking_data(self, station_code: str, start_date: str, end_date: str) -> List[Dict]:
         url = f"{self.config.base_url}/flat/ParkingStation/free,occupied/{start_date}/{end_date}?where=and%28sorigin.eq.FAMAS%2Cscode.eq.%22{station_code}%22%29&select=mvalue,mvalidtime,sname,scode,sorigin,tname&limit=-1"
         response = self._make_request(url)

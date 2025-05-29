@@ -20,6 +20,7 @@ class ModelConfig:
 class AppConfig:
     opendatahub: OpenDataHubConfig = None
     model: ModelConfig = None
+    csv_file_path: str = "data/parking.csv"
 
     def __post_init__(self):
         if self.opendatahub is None:
