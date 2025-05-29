@@ -54,10 +54,10 @@ class MLPredictionService(IPredictionService):
             for col in missing_cols:
                 if "lag" in col:
                     # For lag features, use the current free spaces value
-                    prediction_row[col] = prediction_row["free"].iloc[0] if not prediction_row["free"].empty else 0
+                    prediction_row[col] = prediction_row["free_spaces"].iloc[0] if not prediction_row["free_spaces"].empty else 0
                 elif "rolling" in col:
                     # For rolling features, use current free spaces
-                    prediction_row[col] = prediction_row["free"].iloc[0] if not prediction_row["free"].empty else 0
+                    prediction_row[col] = prediction_row["free_spaces"].iloc[0] if not prediction_row["free_spaces"].empty else 0
                 else:
                     # For other features, use 0
                     prediction_row[col] = 0
