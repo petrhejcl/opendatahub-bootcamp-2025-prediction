@@ -247,7 +247,7 @@ class ParkingApp:
             st.error("No stations available. Please check your connection.")
             return
 
-        station = st.selectbox(
+        self.station = st.selectbox(
             label="Select the parking",
             options=stations_for_selectbox,
             format_func=lambda e: f"{e['sname']}",
@@ -266,7 +266,7 @@ class ParkingApp:
 
         if st.button("Fetch Data", use_container_width=True, type="primary"):
             with st.spinner("Fetching data from OpenDataHub..."):
-                visualization_data = self.app_service.fetch_parking_data(station["scode"], start_date, end_date)
+                visualization_data = self.app_service.fetch_parking_data(self.station["scode"], start_date, end_date)
 
             if visualization_data:
                 st.success(f"Data retrieved successfully! Found {len(visualization_data)} data points.")
@@ -274,7 +274,7 @@ class ParkingApp:
                 st.dataframe(df)
 
                 # Store data in session state for other tabs
-                st.session_state.current_station = station["scode"]
+                st.session_state.current_station = self.station["scode"]
                 st.session_state.current_start_date = start_date
                 st.session_state.current_end_date = end_date
                 st.session_state.has_data = True
@@ -288,7 +288,7 @@ class ParkingApp:
         with predict_tab:
             self._render_prediction_tab()
         with train_tab:
-            self._render_training_tab(station, start_date, end_date)
+            self._render_training_tab(self.station, start_date, end_date)
         with plots_tab:
             self._render_plots_tab()
 
@@ -300,7 +300,7 @@ class ParkingApp:
 
         if st.button("Estimate", use_container_width=True, type="primary", key="occupancy_prediction"):
             with st.spinner("Wait for it...", show_time=True):
-                free_spaces = self.app_service.predict_occupancy(prediction_datetime)
+                free_spaces = self.app_service.predict_occupancy(self.station,prediction_datetime)
 
             if free_spaces is not None:
                 st.subheader(f"Expected number of free parking spaces {free_spaces}", divider=True)
