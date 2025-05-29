@@ -1,5 +1,6 @@
-from tabs.normal_version import normal_version_page
 import streamlit as st
+
+from tabs.normal_version import normal_version_page
 from tabs.simplified_version import simplified_version_page
 
 st.set_page_config(layout="wide")

@@ -1,13 +1,13 @@
 # infrastructure/di_container.py
+from application.services import ParkingApplicationService
 from infrastructure.config import AppConfig
 from infrastructure.external_apis.opendatahub_client import OpenDataHubClient
 from infrastructure.repositories.csv_parking_data_repository import CsvParkingDataRepository
 from infrastructure.repositories.file_model_repository import FileModelRepository
+from infrastructure.repositories.opendatahub_station_repository import OpenDataHubStationRepository
+from infrastructure.services.ml_prediction_service import MLPredictionService
 from infrastructure.services.pandas_data_processing_service import PandasDataProcessingService
 from infrastructure.services.sklearn_model_training_service import SklearnModelTrainingService
-from infrastructure.services.ml_prediction_service import MLPredictionService
-from application.services import ParkingApplicationService
-from infrastructure.repositories.opendatahub_station_repository import OpenDataHubStationRepository
 
 
 class DIContainer:

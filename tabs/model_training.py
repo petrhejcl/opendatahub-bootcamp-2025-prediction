@@ -1,10 +1,12 @@
-import streamlit as st
-from task2 import load_data, create_features, train_model
 import pickle as pkl
 
-from get_data import get_data
+import streamlit as st
 
-def model_training_page(station,start_date,end_date):
+from get_data import get_data
+from task2 import load_data, create_features, train_model
+
+
+def model_training_page(station, start_date, end_date):
     get_data(station_code=station["scode"], start_date=start_date, end_date=end_date)
     df = load_data("parking.csv")
     df_features = create_features(df)

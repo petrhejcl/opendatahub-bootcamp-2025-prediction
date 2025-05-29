@@ -1,7 +1,8 @@
-from get_data import get_stations, get_data
-import streamlit as st
 from datetime import date
 
+import streamlit as st
+
+from get_data import get_stations, get_data
 from tabs.model_training import model_training_page
 from tabs.occupancy_prediction import occupancy_prediction_page
 from tabs.plots import plots_page

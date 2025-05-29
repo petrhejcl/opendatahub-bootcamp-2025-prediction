@@ -1,7 +1,8 @@
 # infrastructure/repositories/file_model_repository.py
-import pickle as pkl
 import os
+import pickle as pkl
 from typing import List, Tuple, Any
+
 from domain.repositories import IMLModelRepository
 
 

@@ -1,11 +1,13 @@
-import pandas as pd
+import pickle as pkl
+from datetime import datetime, timedelta
+
+import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
+import streamlit as st
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
-import matplotlib.pyplot as plt
-from datetime import datetime, timedelta
-import pickle as pkl
-import streamlit as st
+
 
 # Load the data
 def load_data(file_path):
@@ -286,7 +288,7 @@ def parse_prediction_time(time_str):
         return datetime.now() + timedelta(hours=1)
 
 
-def predict(prediction_time_str=None, use_stored_model=True,):
+def predict(prediction_time_str=None, use_stored_model=True, ):
     # Load data
     file_path = "data/parking.csv"  # Update with your file path
 

@@ -1,8 +1,10 @@
 # infrastructure/services/sklearn_model_training_service.py
+from typing import List, Tuple, Any
+
 import numpy as np
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
-from typing import List, Tuple, Any
+
 from domain.entities import ParkingData, ModelPerformance
 from domain.interfaces import IModelTrainingService
 from infrastructure.services.pandas_data_processing_service import PandasDataProcessingService
@@ -30,7 +32,8 @@ class SklearnModelTrainingService(IModelTrainingService):
         print(f"Feature columns: {feature_cols}")
 
         if X.empty or y.empty:
-            raise ValueError("No valid training data after preprocessing. Check if data has sufficient history for lag features.")
+            raise ValueError(
+                "No valid training data after preprocessing. Check if data has sufficient history for lag features.")
 
         # Split data for validation
         if len(X) < 4:  # Need at least 4 samples to split
@@ -47,7 +50,8 @@ class SklearnModelTrainingService(IModelTrainingService):
 
         return model, feature_cols
 
-    def evaluate_model(self, model: Any, feature_columns: List[str], parking_data: List[ParkingData]) -> ModelPerformance:
+    def evaluate_model(self, model: Any, feature_columns: List[str],
+                       parking_data: List[ParkingData]) -> ModelPerformance:
         if not parking_data:
             raise ValueError("No data provided for evaluation")
 

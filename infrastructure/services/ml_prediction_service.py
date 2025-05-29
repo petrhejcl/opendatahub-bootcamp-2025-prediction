@@ -1,11 +1,10 @@
 # infrastructure/services/ml_prediction_service.py
 from datetime import datetime
 from typing import Optional, List
-import pandas as pd
-import numpy as np
+
 from domain.entities import ParkingData
-from domain.repositories import IMLModelRepository
 from domain.interfaces import IPredictionService, IDataProcessingService
+from domain.repositories import IMLModelRepository
 
 
 class MLPredictionService(IPredictionService):
@@ -13,7 +12,8 @@ class MLPredictionService(IPredictionService):
         self.model_repository = model_repository
         self.data_processing_service = data_processing_service
 
-    def predict_free_spaces(self, parking_data: List[ParkingData], prediction_time: datetime, use_stored_model: bool = True) -> Optional[int]:
+    def predict_free_spaces(self, parking_data: List[ParkingData], prediction_time: datetime,
+                            use_stored_model: bool = True) -> Optional[int]:
         try:
             if not parking_data:
                 print("No parking data provided for prediction")

@@ -1,11 +1,12 @@
-import requests
-import json
 import csv
+import json
+
+import requests
 
 # Configuration
 
 start_date = "2024-04-08"
-end_date = "2025-04-08" # not included
+end_date = "2025-04-08"  # not included
 
 station_name = "P16 - Fiera via Marco Polo/Buozzi"
 station_code = 116

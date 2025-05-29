@@ -1,23 +1,24 @@
 # application/services.py
 from datetime import datetime
 from typing import List, Optional, Tuple, Any
-from domain.entities import ParkingStation, ParkingData, ModelPerformance
-from domain.repositories import IParkingStationRepository, IParkingDataRepository, IMLModelRepository
-from domain.interfaces import IDataProcessingService, IModelTrainingService, IPredictionService
+
 from application.dtos import StationDTO, TrainingRequestDTO, VisualizationDataDTO, ModelPerformanceDTO, CoordinateDTO
+from domain.entities import ParkingStation
+from domain.interfaces import IDataProcessingService, IModelTrainingService, IPredictionService
+from domain.repositories import IParkingStationRepository, IParkingDataRepository, IMLModelRepository
 
 
 class ParkingApplicationService:
     """Servizio applicativo - orchestrazione casi d'uso"""
 
     def __init__(
-        self,
-        station_repository: IParkingStationRepository,
-        data_repository: IParkingDataRepository,
-        model_repository: IMLModelRepository,
-        data_processing_service: IDataProcessingService,
-        training_service: IModelTrainingService,
-        prediction_service: IPredictionService
+            self,
+            station_repository: IParkingStationRepository,
+            data_repository: IParkingDataRepository,
+            model_repository: IMLModelRepository,
+            data_processing_service: IDataProcessingService,
+            training_service: IModelTrainingService,
+            prediction_service: IPredictionService
     ):
         self.station_repository = station_repository
         self.data_repository = data_repository
@@ -45,7 +46,8 @@ class ParkingApplicationService:
                 ))
         return coordinates
 
-    def fetch_parking_data(self, station_code: str, start_date: str, end_date: str, force_refresh: bool = False) -> List[VisualizationDataDTO]:
+    def fetch_parking_data(self, station_code: str, start_date: str, end_date: str, force_refresh: bool = False) -> \
+            List[VisualizationDataDTO]:
         """
         Caso d'uso: Recuperare dati parcheggio per visualizzazione
         I dati vengono automaticamente salvati/aggiornati nel CSV repository
@@ -117,7 +119,8 @@ class ParkingApplicationService:
             print(f"Error training model: {e}")
             raise
 
-    def predict_occupancy(self, station_code: str, prediction_time: datetime, data_start_date: str = None, data_end_date: str = None) -> Optional[int]:
+    def predict_occupancy(self, station_code: str, prediction_time: datetime, data_start_date: str = None,
+                          data_end_date: str = None) -> Optional[int]:
         """
         Caso d'uso: Predire occupazione parcheggio
         Usa i dati dal CSV repository
@@ -143,11 +146,11 @@ class ParkingApplicationService:
                 # Debug: verifica se ci sono dati per questa stazione in generale
                 if hasattr(self.data_repository, '_read_csv_data'):
                     # Prova a leggere tutti i dati per la stazione
-                    from datetime import datetime, timedelta
                     debug_start = datetime.now() - timedelta(days=365)  # Ultimo anno
                     debug_end = datetime.now()
                     debug_data = self.data_repository._read_csv_data(station_code, debug_start, debug_end)
-                    print(f"DEBUG: Found {len(debug_data) if debug_data else 0} total records for station {station_code} in last year")
+                    print(
+                        f"DEBUG: Found {len(debug_data) if debug_data else 0} total records for station {station_code} in last year")
                 return None
 
             print(f"Using {len(parking_data)} data points from CSV for prediction")
@@ -175,10 +178,10 @@ class ParkingApplicationService:
             print(f"Error predicting occupancy: {e}")
             return None
 
-
     # METODI AGGIUNTI/CORRETTI per la UI:
 
-    def get_visualization_data(self, station_code: str = None, start_date: str = None, end_date: str = None) -> List[VisualizationDataDTO]:
+    def get_visualization_data(self, station_code: str = None, start_date: str = None, end_date: str = None) -> List[
+        VisualizationDataDTO]:
         """
         Caso d'uso: Ottenere dati per visualizzazione dal CSV
         Se i parametri non sono forniti, usa dati dall'ultima sessione o valori di default
@@ -217,7 +220,8 @@ class ParkingApplicationService:
             print(f"Error getting visualization data: {e}")
             return []
 
-    def evaluate_model_performance(self, station_code: str = None, start_date: str = None, end_date: str = None) -> Optional[ModelPerformanceDTO]:
+    def evaluate_model_performance(self, station_code: str = None, start_date: str = None, end_date: str = None) -> \
+            Optional[ModelPerformanceDTO]:
         """
         Caso d'uso: Valutare performance modello usando dati dal CSV
         """
@@ -292,7 +296,8 @@ class ParkingApplicationService:
         except Exception as e:
             return {'error': f'Error getting CSV info: {str(e)}'}
 
-    def force_refresh_station_data(self, station_code: str, start_date: str, end_date: str) -> List[VisualizationDataDTO]:
+    def force_refresh_station_data(self, station_code: str, start_date: str, end_date: str) -> List[
+        VisualizationDataDTO]:
         """
         Caso d'uso: Forzare il refresh dei dati per una stazione
         """

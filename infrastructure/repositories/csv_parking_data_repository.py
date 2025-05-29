@@ -1,8 +1,10 @@
 # infrastructure/repositories/csv_parking_data_repository.py
-import pandas as pd
 import os
 from datetime import datetime
 from typing import List
+
+import pandas as pd
+
 from domain.entities import ParkingData
 from domain.repositories import IParkingDataRepository
 from infrastructure.external_apis.opendatahub_client import OpenDataHubClient
@@ -60,23 +62,42 @@ class CsvParkingDataRepository(IParkingDataRepository):
                 print("CSV is empty")
                 return []
 
+            df['station_code'] = df['station_code'].astype(str)
+            station_code_str = str(station_code)
+
+            print(f"Looking for station_code: '{station_code_str}' (type: {type(station_code_str)})")
+            print(f"Unique station codes in CSV: {df['station_code'].unique()}")
+
             # Filtra per stazione
-            station_df = df[df['station_code'] == station_code]
-            print(f"Found {len(station_df)} records for station {station_code}")
+            station_df = df[df['station_code'] == station_code_str]
+            print(f"Found {len(station_df)} records for station {station_code_str}")
 
             if station_df.empty:
-                print(f"No records found for station {station_code}")
+                print(f"No records found for station {station_code_str}")
                 return []
 
             # Converti timestamp e filtra per date
             station_df = station_df.copy()
-            station_df['timestamp'] = pd.to_datetime(station_df['timestamp'], format='mixed')
+
+            try:
+                station_df['timestamp'] = pd.to_datetime(station_df['timestamp'], format='%Y-%m-%dT%H:%M:%S')
+            except:
+                try:
+                    station_df['timestamp'] = pd.to_datetime(station_df['timestamp'], format='mixed')
+                except:
+                    # Fallback to automatic parsing
+                    station_df['timestamp'] = pd.to_datetime(station_df['timestamp'])
+
+            print(f"Timestamp range in data: {station_df['timestamp'].min()} to {station_df['timestamp'].max()}")
+            print(f"Requested range: {start_date} to {end_date}")
 
             # Filter by date range
             date_filtered_df = station_df[
                 (station_df['timestamp'] >= start_date) &
                 (station_df['timestamp'] <= end_date)
             ]
+
+            print(f"After date filtering: {len(date_filtered_df)} records")
 
             # Converti in oggetti ParkingData
             parking_data = []
@@ -96,6 +117,8 @@ class CsvParkingDataRepository(IParkingDataRepository):
 
         except Exception as e:
             print(f"Error reading CSV data: {e}")
+            import traceback
+            traceback.print_exc()
             return []
 
     def _fetch_and_update_csv(self, station_code: str, start_date: datetime, end_date: datetime):
@@ -155,7 +178,7 @@ class CsvParkingDataRepository(IParkingDataRepository):
                     occupied_spaces = values.get("occupied", 0)
 
                     new_records.append({
-                        'station_code': station_code,
+                        'station_code': str(station_code),
                         'timestamp': timestamp.strftime('%Y-%m-%dT%H:%M:%S'),  # Consistent format
                         'free_spaces': free_spaces,
                         'occupied_spaces': occupied_spaces
@@ -207,4 +230,6 @@ class CsvParkingDataRepository(IParkingDataRepository):
 
         except Exception as e:
             print(f"Error replacing CSV data: {e}")
+            import traceback
+            traceback.print_exc()
             raise

@@ -1,5 +1,6 @@
 # infrastructure/repositories/opendatahub_station_repository.py
 from typing import List, Optional
+
 from domain.entities import ParkingStation
 from domain.repositories import IParkingStationRepository
 from infrastructure.external_apis.opendatahub_client import OpenDataHubClient
@@ -71,7 +72,6 @@ class OpenDataHubStationRepository(IParkingStationRepository):
         except Exception as e:
             print(f"Error fetching stations from API: {e}")
             return []
-
 
     def refresh_cache(self):
         """Force refresh of stations cache"""

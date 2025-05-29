@@ -1,10 +1,11 @@
-import pandas as pd
+import pickle as pkl
+from datetime import timedelta
+
+import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
-import matplotlib.pyplot as plt
-from datetime import timedelta
-import pickle as pkl
 
 
 # Load the data
@@ -185,7 +186,7 @@ def plot_predicted_vs_actual(df, model, feature_cols):
 
     # Focus on a smaller time window for better visibility (last 2 days)
     last_two_days = results_df["mvalidtime"] > (
-        results_df["mvalidtime"].max() - pd.Timedelta(days=2)
+            results_df["mvalidtime"].max() - pd.Timedelta(days=2)
     )
     zoom_df = results_df[last_two_days]
 
@@ -220,7 +221,7 @@ def plot_predicted_vs_actual(df, model, feature_cols):
     # Calculate some statistics
     error = results_df["predicted"] - results_df["actual"]
     mae = np.mean(np.abs(error))
-    rmse = np.sqrt(np.mean(error**2))
+    rmse = np.sqrt(np.mean(error ** 2))
 
     print(f"Mean Absolute Error: {mae:.2f} spaces")
     print(f"Root Mean Square Error: {rmse:.2f} spaces")

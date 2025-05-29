@@ -1,9 +1,10 @@
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-import streamlit as st
-import pandas as pd
-import numpy as np
 import pickle as pkl
+
+import numpy as np
+import pandas as pd
+import plotly.graph_objects as go
+import streamlit as st
+from plotly.subplots import make_subplots
 
 from task2 import load_data, create_features
 
@@ -117,7 +118,7 @@ def render_performance_plot(df, model, feature_cols):
 
     # Focus on a smaller time window for better visibility (last 2 days)
     last_two_days = results_df["mvalidtime"] > (
-        results_df["mvalidtime"].max() - pd.Timedelta(days=2)
+            results_df["mvalidtime"].max() - pd.Timedelta(days=2)
     )
     zoom_df = results_df[last_two_days]
 
@@ -218,7 +219,7 @@ def render_performance_plot(df, model, feature_cols):
     # Calculate some statistics
     error = results_df["predicted"] - results_df["actual"]
     mae = np.mean(np.abs(error))
-    rmse = np.sqrt(np.mean(error**2))
+    rmse = np.sqrt(np.mean(error ** 2))
 
     st.metric(label="Mean Absolute Error", value=f"{mae:.2f} spaces")
     st.metric(label="Root Mean Square Error", value=f"{rmse:.2f} spaces")

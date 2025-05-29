@@ -1,10 +1,11 @@
 # presentation/visualizations.py
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-import streamlit as st
-import pandas as pd
-import numpy as np
 from typing import List
+
+import pandas as pd
+import plotly.graph_objects as go
+import streamlit as st
+from plotly.subplots import make_subplots
+
 from application.dtos import VisualizationDataDTO, ModelPerformanceDTO
 
 
