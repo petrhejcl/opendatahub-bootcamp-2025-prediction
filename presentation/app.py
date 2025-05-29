@@ -225,7 +225,7 @@ class ParkingApp:
                                     )
 
                                     if free_spaces is not None:
-                                        st.success(f"Expected number of free parking spaces: {free_spaces}")
+                                        st.subheader(f"Expected number of free parking spaces: {free_spaces}", divider=True)
                                     else:
                                         st.warning("Unable to make prediction with available data.")
                                 except Exception as e:
