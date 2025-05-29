@@ -3,7 +3,7 @@ from typing import List, Dict, Optional
 import requests
 
 from infrastructure.config import OpenDataHubConfig
-
+import urllib.parse
 
 class OpenDataHubClient:
     def __init__(self, config: OpenDataHubConfig):
@@ -52,6 +52,10 @@ class OpenDataHubClient:
         return self.get_stations_data()
 
     def get_parking_data(self, station_code: str, start_date: str, end_date: str) -> List[Dict]:
-        url = f"{self.config.base_url}/flat/ParkingStation/free,occupied/{start_date}/{end_date}?where=and%28sorigin.eq.FAMAS%2Cscode.eq.%22{station_code}%22%29&select=mvalue,mvalidtime,sname,scode,sorigin,tname&limit=-1"
+        # URL encode the station code properly
+        encoded_station_code = urllib.parse.quote(station_code, safe='')
+        # Remove the sorigin.eq.FAMAS filter from the where clause
+        url = f"{self.config.base_url}/flat/ParkingStation/free,occupied/{start_date}/{end_date}?where=scode.eq.%22{encoded_station_code}%22&select=mvalue,mvalidtime,sname,scode,sorigin,tname&limit=-1"
+        print(f"Making API request with URL: {url}")  # Add this debug line
         response = self._make_request(url)
         return response.get("data", []) if response else []
