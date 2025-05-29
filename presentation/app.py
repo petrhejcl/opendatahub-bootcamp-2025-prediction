@@ -300,12 +300,17 @@ class ParkingApp:
 
         if st.button("Estimate", use_container_width=True, type="primary", key="occupancy_prediction"):
             with st.spinner("Wait for it...", show_time=True):
-                free_spaces = self.app_service.predict_occupancy(self.station,prediction_datetime)
+                free_spaces = self.app_service.predict_occupancy(
+                    station_code=self.station["scode"],
+                    prediction_time=prediction_datetime,
+                    data_start_date=st.session_state.current_start_date,
+                    data_end_date=st.session_state.current_end_date
+                )
 
-            if free_spaces is not None:
-                st.subheader(f"Expected number of free parking spaces {free_spaces}", divider=True)
-            else:
-                st.error("Unable to make prediction. Please ensure data is loaded and model is trained.")
+                if free_spaces is not None:
+                    st.subheader(f"Expected number of free parking spaces: {free_spaces}", divider=True)
+                else:
+                    st.warning("Unable to make prediction with available data.")
 
     def _render_training_tab(self, station: Dict, start_date: str, end_date: str):
         """Render the training tab"""
