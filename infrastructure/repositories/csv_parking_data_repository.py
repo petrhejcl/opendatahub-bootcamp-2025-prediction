@@ -13,13 +13,16 @@ from infrastructure.external_apis.opendatahub_client import OpenDataHubClient
 class CsvParkingDataRepository(IParkingDataRepository):
     """Repository che gestisce i dati usando un file CSV come storage persistente"""
 
-    def __init__(self, api_client: OpenDataHubClient, csv_file_path: str = "parking.csv"):
+    def __init__(self, api_client: OpenDataHubClient, csv_file_path: str = "data/parking.csv"):
         self.api_client = api_client
         self.csv_file_path = csv_file_path
         self._ensure_csv_exists()
 
     def _ensure_csv_exists(self):
         """Crea il file CSV se non esiste"""
+        # Assicurati che la directory esista
+        os.makedirs(os.path.dirname(self.csv_file_path), exist_ok=True)
+
         if not os.path.exists(self.csv_file_path):
             empty_df = pd.DataFrame(columns=[
                 'station_code', 'timestamp', 'free_spaces', 'occupied_spaces'
@@ -47,6 +50,56 @@ class CsvParkingDataRepository(IParkingDataRepository):
 
         # Rileggi i dati dopo l'aggiornamento
         return self._read_csv_data(station_code, start_date, end_date)
+
+    def force_refresh_data(self, station_code: str, start_date: datetime, end_date: datetime) -> List[ParkingData]:
+        """
+        Forza il refresh dei dati dall'API indipendentemente da cosa c'è nel CSV
+        """
+        print(f"Force refreshing data for station {station_code} from {start_date} to {end_date}")
+
+        # Fetch direttamente dall'API senza controllare il CSV
+        self._fetch_and_update_csv(station_code, start_date, end_date)
+
+        # Ritorna i dati aggiornati
+        return self._read_csv_data(station_code, start_date, end_date)
+
+    def get_all_stations_in_csv(self) -> List[str]:
+        """Restituisce tutte le stazioni presenti nel CSV"""
+        try:
+            if not os.path.exists(self.csv_file_path):
+                return []
+
+            df = pd.read_csv(self.csv_file_path)
+            if df.empty:
+                return []
+
+            return sorted(df['station_code'].astype(str).unique().tolist())
+        except Exception as e:
+            print(f"Error getting stations from CSV: {e}")
+            return []
+
+    def get_data_date_range(self, station_code: str) -> tuple:
+        """Restituisce il range di date disponibili per una stazione nel CSV"""
+        try:
+            if not os.path.exists(self.csv_file_path):
+                return None, None
+
+            df = pd.read_csv(self.csv_file_path)
+            if df.empty:
+                return None, None
+
+            station_df = df[df['station_code'].astype(str) == str(station_code)]
+            if station_df.empty:
+                return None, None
+
+            station_df['timestamp'] = pd.to_datetime(station_df['timestamp'])
+            min_date = station_df['timestamp'].min()
+            max_date = station_df['timestamp'].max()
+
+            return min_date, max_date
+        except Exception as e:
+            print(f"Error getting date range: {e}")
+            return None, None
 
     def _read_csv_data(self, station_code: str, start_date: datetime, end_date: datetime) -> List[ParkingData]:
         """Legge i dati dal file CSV per la stazione e periodo specificati"""
@@ -224,9 +277,14 @@ class CsvParkingDataRepository(IParkingDataRepository):
                 # Convert back to string with consistent format for CSV storage
                 new_df['timestamp'] = new_df['timestamp'].dt.strftime('%Y-%m-%dT%H:%M:%S')
 
+                print(f"Processed {len(new_df)} unique records")
+
+            # Assicurati che la directory esista
+            os.makedirs(os.path.dirname(self.csv_file_path), exist_ok=True)
+
             # Salva nel CSV (sostituisce completamente il file esistente)
             new_df.to_csv(self.csv_file_path, index=False)
-            print(f"CSV replaced successfully - total records: {len(new_df)}")
+            print(f"CSV saved successfully - total records: {len(new_df)}")
 
         except Exception as e:
             print(f"Error replacing CSV data: {e}")
