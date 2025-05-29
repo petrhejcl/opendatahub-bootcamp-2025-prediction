@@ -165,46 +165,46 @@ class CsvParkingDataRepository(IParkingDataRepository):
                     continue
 
             if new_records:
-                self._append_to_csv(new_records)
+                self._replace_csv_data(new_records)
                 print(f"Added {len(new_records)} new records to CSV")
 
         except Exception as e:
             print(f"Error fetching and updating CSV: {e}")
 
-    def _append_to_csv(self, new_records: List[dict]):
-        """Aggiunge nuovi record al CSV, evitando duplicati"""
+    def _replace_csv_data(self, new_records: List[dict]):
+        """Sostituisce i dati esistenti nel CSV con i nuovi record"""
         try:
-            # Leggi CSV esistente
-            try:
-                existing_df = pd.read_csv(self.csv_file_path)
-                # Ensure consistent timestamp format when reading
-                if not existing_df.empty and 'timestamp' in existing_df.columns:
-                    existing_df['timestamp'] = pd.to_datetime(existing_df['timestamp'], format='mixed')
-            except (FileNotFoundError, pd.errors.EmptyDataError):
-                existing_df = pd.DataFrame(columns=['station_code', 'timestamp', 'free_spaces', 'occupied_spaces'])
+            # Debug: check what we received
+            print(f"Received new_records type: {type(new_records)}")
+            print(f"Received new_records content: {new_records}")
+
+            # Ensure new_records is a list
+            if not isinstance(new_records, list):
+                raise ValueError(f"Expected list, got {type(new_records)}")
 
             # Crea DataFrame con i nuovi record
             new_df = pd.DataFrame(new_records)
-            # Convert timestamp column to datetime
-            new_df['timestamp'] = pd.to_datetime(new_df['timestamp'])
 
-            if not existing_df.empty:
-                # Combina e rimuovi duplicati
-                combined_df = pd.concat([existing_df, new_df], ignore_index=True)
-                combined_df = combined_df.drop_duplicates(subset=['station_code', 'timestamp'], keep='last')
+            # Se non ci sono nuovi record, crea un DataFrame vuoto con le colonne corrette
+            if new_df.empty:
+                new_df = pd.DataFrame(columns=['station_code', 'timestamp', 'free_spaces', 'occupied_spaces'])
             else:
-                combined_df = new_df
+                # Convert timestamp column to datetime
+                new_df['timestamp'] = pd.to_datetime(new_df['timestamp'])
 
-            # Ordina per timestamp
-            combined_df = combined_df.sort_values(['station_code', 'timestamp'])
+                # Rimuovi duplicati nei nuovi dati (mantieni l'ultimo)
+                new_df = new_df.drop_duplicates(subset=['station_code', 'timestamp'], keep='last')
 
-            # Convert back to string with consistent format for CSV storage
-            combined_df['timestamp'] = combined_df['timestamp'].dt.strftime('%Y-%m-%dT%H:%M:%S')
+                # Ordina per timestamp
+                new_df = new_df.sort_values(['station_code', 'timestamp'])
 
-            # Salva nel CSV
-            combined_df.to_csv(self.csv_file_path, index=False)
-            print(f"CSV updated successfully - total records: {len(combined_df)}")
+                # Convert back to string with consistent format for CSV storage
+                new_df['timestamp'] = new_df['timestamp'].dt.strftime('%Y-%m-%dT%H:%M:%S')
+
+            # Salva nel CSV (sostituisce completamente il file esistente)
+            new_df.to_csv(self.csv_file_path, index=False)
+            print(f"CSV replaced successfully - total records: {len(new_df)}")
 
         except Exception as e:
-            print(f"Error appending to CSV: {e}")
+            print(f"Error replacing CSV data: {e}")
             raise
